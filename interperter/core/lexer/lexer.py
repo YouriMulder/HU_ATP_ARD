@@ -1,12 +1,8 @@
+from ..token import TokenSymbol, Token
+
 import re
 from typing import List
-from enum import Enum
 import copy
-
-class TokenSymbol(Enum):
-    WHITESPACE  = "WHITESPACE"
-    PLUS        = "PLUS"
-    INTEGER     = "INTEGER"
 
 class TokenCombination:
     def __init__(self, symbol: TokenSymbol, regex: str):
@@ -16,19 +12,14 @@ class TokenCombination:
     def __str__(self):
         return self.symbol.value + " " + self.regex
 
-class Token:
-    def __init__(self, symbol: TokenSymbol, value: str):
-        self.symbol = symbol
-        self.value = value
-
-    def __str__(self):
-        return self.symbol.value + " " + self.value
-
 def get_matching_token_combination(sequence):
     token_type_combinations = [
-        TokenCombination(TokenSymbol.WHITESPACE, "\s"),
-        TokenCombination(TokenSymbol.PLUS, "\+"),
-        TokenCombination(TokenSymbol.INTEGER, "\d+"),
+        TokenCombination(TokenSymbol.DIVERSE.WHITESPACE,    r"\s"),
+        TokenCombination(TokenSymbol.OPERATOR.PLUS,         r"\+"),
+        TokenCombination(TokenSymbol.OPERATOR.MIN,          r"\-"),
+        TokenCombination(TokenSymbol.OPERATOR.DEVIDE,       r"\/"),
+        TokenCombination(TokenSymbol.OPERATOR.MULTIPLY,     r"\*"),
+        TokenCombination(TokenSymbol.DIVERSE.INTEGER,       r"\d+"),
     ]
 
     token_types = list(filter(lambda x: re.match(x.regex, sequence), token_type_combinations))

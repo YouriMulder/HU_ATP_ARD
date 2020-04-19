@@ -1,5 +1,7 @@
 from path import path
-from lexer.lexer import lexer
+from core.lexer.lexer import lexer
+from core.parser.ast import parse
+from core.interpreter.interpreter import interpret
 
 class file_input:
     def __init__(self, file_path: str):
@@ -11,16 +13,16 @@ class file_input:
             data = opened_file.read()
         return data
 
-    def __str__(self):
+    def __str__(self) -> str:
         return \
             "File path: " + self.file_path + "\n" \
             + self.file_content
 
-
 source_file_path = path.source + "main.ym"
 source_file = file_input(source_file_path)
 tokens = lexer(source_file.get_file_content())
-for token in tokens:
-    print(token)
+ast = parse(tokens)
+result = interpret(ast)
+print(result)
 
         
