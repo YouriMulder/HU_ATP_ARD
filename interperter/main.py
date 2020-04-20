@@ -21,8 +21,11 @@ class file_input:
 source_file_path = path.source + "main.ym"
 source_file = file_input(source_file_path)
 tokens = lexer(source_file.get_file_content())
+
+for token in tokens:
+    print(token)
+
 ast = parse(tokens)
 result = interpret(ast)
 print(result)
-
         

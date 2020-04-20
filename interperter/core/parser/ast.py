@@ -2,12 +2,6 @@ from .tree import *
 
 from ..token import TokenSymbol
 
-def factor(token):
-    if token.symbol == TokenSymbol.DIVERSE.INTEGER:
-        return NumberNode(token.value)
-    
-    return None
-
 def token_is_operator(token):
     return token.symbol in TokenSymbol.OPERATOR
 
@@ -27,36 +21,56 @@ def get_operator_from_token(token):
     operator_token = filtered_token_operators[0]
     return OperatorNode(operator_token[1])
 
+class ParseState:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.current_token = self.tokens[0]
 
-def expr(tokens, previous_node = None):
-    if len(tokens) == 0:
-        return previous_node
+    def pop_front(self):
+        item = self.tokens.pop(0)
+        if len(self.tokens) > 0:
+            self.current_token = self.tokens[0]
+        return item
+
+def factor(parse_state):
+    """
+    factor : INTEGER | LPAREN expr RPAREN
+    """
+
+    if parse_state.current_token.symbol == TokenSymbol.DIVERSE.INTEGER:
+        return NumberNode(parse_state.pop_front().value)
+
+    return None
+
+def term(parse_state):
+    """
+    term   : factor ((MUL | DIV) factor)*
+    """
     
-    if token_is_operator(tokens[0]):
-        # left is expression
-        left_node = previous_node
-        
-        current_token, *tokens = tokens
+    node = factor(parse_state)
+    while parse_state.current_token.symbol in (TokenSymbol.OPERATOR.MULTIPLY, TokenSymbol.OPERATOR.DEVIDE):
+        node = BinaryOp(left=node, operator=get_operator_from_token(parse_state.pop_front()), right=factor(parse_state))
 
-        operator_node = get_operator_from_token(current_token) 
-        
-        current_token, *tokens = tokens
-        right_node = factor(current_token)
-    else:
-        current_token, *tokens = tokens
-        left_node = factor(current_token)
+    return node
 
-        current_token, *tokens = tokens
-        operator_node = get_operator_from_token(current_token) 
-        
-        current_token, *tokens = tokens
-        right_node = factor(current_token)
-    
-    node = BinaryOp(left_node, operator_node, right_node)
-    return expr(tokens, node)
+def expr(parse_state):
+    """
+    expr   : term ((PLUS | MINUS) term)*
+    term   : factor ((MUL | DIV) factor)*
+    factor : INTEGER | LPAREN expr RPAREN
+    """
+
+    node = term(parse_state)
+
+    while parse_state.current_token.symbol in (TokenSymbol.OPERATOR.PLUS, TokenSymbol.OPERATOR.MIN):
+        node = BinaryOp(left=node, operator=get_operator_from_token(parse_state.pop_front()), right=term(parse_state))
+
+    return node
 
 def parse(tokens):
+    parse_state = ParseState(tokens)
+    output = expr(parse_state)
     tree = Tree()
-    output = expr(tokens)
     tree.root.append(output)
-    return tree
+
+    return tree 

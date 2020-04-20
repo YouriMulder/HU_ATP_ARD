@@ -5,15 +5,17 @@ class TokenOperator(Enum):
     PLUS        = "PLUS"
     MIN         = "MIN"
     DEVIDE      = "DEVIDE"
-    MULTIPLY    = "MULTIPLY" 
+    MULTIPLY    = "MULTIPLY"
  
 class TokenDiverse(Enum):
     WHITESPACE  = "WHITESPACE"
     INTEGER     = "INTEGER"
+    EOF         = "EOF"
 
 class TokenSymbol:
     OPERATOR = TokenOperator
     DIVERSE = TokenDiverse
+
 
 class Token:
     def __init__(self, symbol: TokenSymbol, value: str):

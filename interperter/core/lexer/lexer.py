@@ -50,6 +50,11 @@ def tokenize(characters: List[str], tokens=[], sequence: str = "") -> List[Token
         sequence = ""
         
     if len(characters) == 0:
+        tokens.append(Token(
+            TokenSymbol.DIVERSE.EOF,
+            ""
+        ))
+        
         return
 
     tokenize(characters, tokens, sequence)
