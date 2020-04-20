@@ -1,12 +1,14 @@
 class Tree:
-    def __init__(self):
-        self.root = []
+    def __init__(self, root_node):
+        self.root_node = root_node
 
     def __str__(self):
-        result = ""
-        for note in self.root:
-            result += str(note) + " "
-        return result
+        node_strings = list(map(lambda node: str(node), self.root_node.nodes))
+        return "\n".join(node_strings)
+
+class RootNode:
+    def __init__(self, nodes):
+        self.nodes = nodes
 
 class BinaryOpNode:
     def __init__(self, left, operator, right):

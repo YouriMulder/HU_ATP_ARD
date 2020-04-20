@@ -14,21 +14,17 @@ class TokenCombination:
 
 def get_matching_token_combination(sequence):
     token_type_combinations = [
-        # TokenCombination(TokenSymbol.DIVERSE.WHITESPACE,    r"\s"),
-        
-        TokenCombination(TokenSymbol.OPERATOR.PLUS,         r"\+"),
-        TokenCombination(TokenSymbol.OPERATOR.MIN,          r"\-"),
-        TokenCombination(TokenSymbol.OPERATOR.DEVIDE,       r"\/"),
-        TokenCombination(TokenSymbol.OPERATOR.MULTIPLY,     r"\*"),
+        TokenCombination(TokenSymbol.OPERATOR.MATH.PLUS,         r"\+"),
+        TokenCombination(TokenSymbol.OPERATOR.MATH.MIN,          r"\-"),
+        TokenCombination(TokenSymbol.OPERATOR.MATH.DEVIDE,       r"\/"),
+        TokenCombination(TokenSymbol.OPERATOR.MATH.MULTIPLY,     r"\*"),
+        TokenCombination(TokenSymbol.OPERATOR.ASSIGNMENT.ASSIGNMENT,   r"^:=$"),
+        TokenCombination(TokenSymbol.OPERATOR.RELATIONAL.EQUALS,       r"^:==$"),
         
         TokenCombination(TokenSymbol.CONSTANT.INTEGER,      r"\d+"),
         
-        TokenCombination(TokenSymbol.OPERATOR.ASSIGNMENT,    r":="),
-
         TokenCombination(TokenSymbol.DIVERSE.IDENTIFIER,    r"[a-zA-Z]"),
-        TokenCombination(TokenSymbol.DIVERSE.ENDOFSTATEMENT, "!")
-
-
+        TokenCombination(TokenSymbol.DIVERSE.ENDOFSTATEMENT,r"!")
     ]
 
     token_types = list(filter(lambda x: re.match(x.regex, sequence), token_type_combinations))

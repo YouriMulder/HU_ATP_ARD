@@ -1,2 +1,4 @@
 youri := 10 / 2 + 11!
 hank := youri + 1!
+is_dit_waar := 10 + 10 :== 20!
+is_dit_waar := is_dit_waar :== 2!
