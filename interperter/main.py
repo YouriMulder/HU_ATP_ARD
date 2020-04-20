@@ -1,6 +1,6 @@
 from path import path
 from core.lexer.lexer import lexer
-from core.parser.ast import parse
+from core.parser.ast import create_ast
 from core.interpreter.interpreter import interpret
 
 class file_input:
@@ -20,12 +20,11 @@ class file_input:
 
 source_file_path = path.source + "main.ym"
 source_file = file_input(source_file_path)
+print("Tokenize")
 tokens = lexer(source_file.get_file_content())
-
-for token in tokens:
-    print(token)
-
-ast = parse(tokens)
-result = interpret(ast)
+print("ast")
+ast = create_ast(tokens)
+print("interpret")
+result = interpret(ast) 
 print(result)
         

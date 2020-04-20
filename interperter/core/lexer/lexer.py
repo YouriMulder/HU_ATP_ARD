@@ -14,12 +14,21 @@ class TokenCombination:
 
 def get_matching_token_combination(sequence):
     token_type_combinations = [
-        TokenCombination(TokenSymbol.DIVERSE.WHITESPACE,    r"\s"),
+        # TokenCombination(TokenSymbol.DIVERSE.WHITESPACE,    r"\s"),
+        
         TokenCombination(TokenSymbol.OPERATOR.PLUS,         r"\+"),
         TokenCombination(TokenSymbol.OPERATOR.MIN,          r"\-"),
         TokenCombination(TokenSymbol.OPERATOR.DEVIDE,       r"\/"),
         TokenCombination(TokenSymbol.OPERATOR.MULTIPLY,     r"\*"),
-        TokenCombination(TokenSymbol.DIVERSE.INTEGER,       r"\d+"),
+        
+        TokenCombination(TokenSymbol.CONSTANT.INTEGER,      r"\d+"),
+        
+        TokenCombination(TokenSymbol.OPERATOR.ASSIGNMENT,    r":="),
+
+        TokenCombination(TokenSymbol.DIVERSE.IDENTIFIER,    r"[a-zA-Z]"),
+        TokenCombination(TokenSymbol.DIVERSE.ENDOFSTATEMENT, "!")
+
+
     ]
 
     token_types = list(filter(lambda x: re.match(x.regex, sequence), token_type_combinations))
@@ -36,11 +45,12 @@ def tokenize(characters: List[str], tokens=[], sequence: str = "") -> List[Token
     characters = tail
     
     WHITESPACE = " "
-
-    if head != WHITESPACE:
+    NEWLINE = "\n"
+    ENDOFSTATEMENT = "!"
+    if head not in (WHITESPACE, NEWLINE, ENDOFSTATEMENT):
         sequence = sequence + head
 
-    if head == WHITESPACE or len(characters) == 0:
+    if head in (WHITESPACE, ENDOFSTATEMENT) or len(characters) == 0:
         token_combination = get_matching_token_combination(sequence)
         tokens.append(Token(
             token_combination.symbol,
@@ -48,7 +58,14 @@ def tokenize(characters: List[str], tokens=[], sequence: str = "") -> List[Token
         ))
 
         sequence = ""
-        
+    
+    if head == ENDOFSTATEMENT:
+        token_combination = get_matching_token_combination(head)
+        tokens.append(Token(
+            token_combination.symbol,
+            head
+        ))
+
     if len(characters) == 0:
         tokens.append(Token(
             TokenSymbol.DIVERSE.EOF,

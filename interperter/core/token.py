@@ -6,14 +6,20 @@ class TokenOperator(Enum):
     MIN         = "MIN"
     DEVIDE      = "DEVIDE"
     MULTIPLY    = "MULTIPLY"
- 
+    ASSIGNMENT  = "ASSIGNMENT"
+
+class TokenConstant(Enum):
+    INTEGER     = "INTEGER"
+
 class TokenDiverse(Enum):
     WHITESPACE  = "WHITESPACE"
-    INTEGER     = "INTEGER"
+    IDENTIFIER  = "IDENTIFIER"
+    ENDOFSTATEMENT = "ENDOFSTATEMENT"
     EOF         = "EOF"
 
 class TokenSymbol:
     OPERATOR = TokenOperator
+    CONSTANT = TokenConstant
     DIVERSE = TokenDiverse
 
 
