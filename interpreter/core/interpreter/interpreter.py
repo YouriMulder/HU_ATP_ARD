@@ -1,5 +1,5 @@
 from ..token import TokenSymbol
-from ..parser.tree import RootNode, BinaryOpNode, AssignmentNode, IdentifierNode, NumberNode
+from ..parser.tree import RootNode, BinaryOpNode, AssignmentNode, IdentifierNode, NumberNode, PrintNode
 
 class ProgramState:
     def __init__(self):
@@ -58,13 +58,19 @@ def visit_assignment_node(program_state, node):
 def visit_identifier_node(program_state, node):
     return program_state.variables[node.value]
 
+def visit_print_node(program_state, node):
+    program_state, output = visit_node(program_state, node.print_node)
+    print("interpreter:", output)
+    return program_state, None
+
 def visit_node(program_state, node):
     node_function_combinations = [
         (RootNode, visit_root_node),
         (AssignmentNode, visit_assignment_node),
         (BinaryOpNode, visit_binary_operator),
         (NumberNode, lambda program_state, node: node.value),
-        (IdentifierNode, visit_identifier_node)
+        (IdentifierNode, visit_identifier_node),
+        (PrintNode, visit_print_node)
     ]
 
     node_funcs = list(filter(lambda x: type(node) == x[0], node_function_combinations))

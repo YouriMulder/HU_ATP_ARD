@@ -43,3 +43,7 @@ class NumberNode:
 class IdentifierNode:
     def __init__(self, value):
         self.value = str(value)
+
+class PrintNode:
+    def __init__(self, print_node):
+        self.print_node = print_node

@@ -23,8 +23,9 @@ def get_matching_token_combination(sequence):
         
         TokenCombination(TokenSymbol.CONSTANT.INTEGER,      r"\d+"),
         
+        TokenCombination(TokenSymbol.DIVERSE.SHOW,    r"^ShOw$"),
+        TokenCombination(TokenSymbol.DIVERSE.ENDOFSTATEMENT,r"!"),
         TokenCombination(TokenSymbol.DIVERSE.IDENTIFIER,    r"[a-zA-Z]"),
-        TokenCombination(TokenSymbol.DIVERSE.ENDOFSTATEMENT,r"!")
     ]
 
     token_types = list(filter(lambda x: re.match(x.regex, sequence), token_type_combinations))
@@ -32,11 +33,12 @@ def get_matching_token_combination(sequence):
     if len(token_types) == 1:
         return token_types[0]
     if len(token_types) > 1:
-        for token in token_types:
-            print(token)
-    return None
+        pass
+        # for token in token_types:
+        #     print(token)
+    return token_types[0]
 
-def tokenize(characters: List[str], tokens=[], sequence: str = "") -> List[Token]:
+def tokenize(characters: List[str], tokens=[], sequence: str="") -> List[Token]:
     head, *tail = characters
     characters = tail
     

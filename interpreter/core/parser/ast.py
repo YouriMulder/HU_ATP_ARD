@@ -1,4 +1,4 @@
-from .tree import RootNode, IdentifierNode, NumberNode, OperatorNode, BinaryOpNode, AssignmentNode, Tree
+from .tree import RootNode, IdentifierNode, NumberNode, OperatorNode, BinaryOpNode, AssignmentNode, PrintNode, Tree
 
 from ..token import TokenSymbol
 
@@ -75,9 +75,14 @@ def parsing(parse_state, root=None):
         node = BinaryOpNode(root, OperatorNode(parse_state.pop_front().value), expr(parse_state))
         return parsing(parse_state, node)
     
+    elif parse_state.current_token.symbol == TokenSymbol.DIVERSE.SHOW:
+        parse_state.pop_front().value
+        return PrintNode(parsing(parse_state, root))
+
     elif parse_state.current_token.symbol in TokenSymbol.OPERATOR.MATH:
         return expr(parse_state, root)
-   
+
+
     return root
 
 def create_root_node(parse_state, root_node):

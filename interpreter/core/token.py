@@ -26,6 +26,7 @@ class TokenControlFlow(Enum):
 
 class TokenDiverse(Enum):
     WHITESPACE  = "WHITESPACE"
+    SHOW        = "SHOW"
     IDENTIFIER  = "IDENTIFIER"
     ENDOFSTATEMENT = "ENDOFSTATEMENT"
     EOF         = "EOF"
@@ -35,8 +36,6 @@ class TokenSymbol:
     CONSTANT = TokenConstant
     CONTROL = TokenControlFlow
     DIVERSE = TokenDiverse
-
-
 
 class Token:
     def __init__(self, symbol: TokenSymbol, value: str):
