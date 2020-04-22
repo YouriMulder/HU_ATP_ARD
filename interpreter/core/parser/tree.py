@@ -47,3 +47,8 @@ class IdentifierNode:
 class PrintNode:
     def __init__(self, print_node):
         self.print_node = print_node
+
+class WhileNode:
+    def __init__(self, condition_node, execute_node):
+        self.condition_node = condition_node
+        self.execute_node = execute_node

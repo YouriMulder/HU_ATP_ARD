@@ -1,5 +1,5 @@
 from ..token import TokenSymbol
-from ..parser.tree import RootNode, BinaryOpNode, AssignmentNode, IdentifierNode, NumberNode, PrintNode
+from ..parser.tree import RootNode, WhileNode, BinaryOpNode, AssignmentNode, IdentifierNode, NumberNode, PrintNode
 
 class ProgramState:
     def __init__(self):
@@ -32,7 +32,13 @@ def get_operator_func(node):
         ("-",   lambda x,y: x - y),
         ("*",   lambda x,y: x * y),
         ("/",   lambda x,y: x / y),
+        
         (":==", lambda x,y: x == y),
+        (":<",  lambda x,y: x < y),
+        (":<=", lambda x,y: x <= y),
+        (":>",  lambda x,y: x > y),
+        (":>=", lambda x,y: x >= y),
+        
     ]
 
     operator_funcs = list(filter(lambda x: node.operator.value == x[0], operator_function_combinations))
@@ -63,6 +69,19 @@ def visit_print_node(program_state, node):
     print("interpreter:", output)
     return program_state, None
 
+def visit_while_node(program_state, node):
+    print("hey")
+    program_state, output = visit_node(program_state, node.condition_node)
+    if output == False:
+        print("out")
+        return program_state
+    
+    program_state, output = visit_node(program_state, node.execute_node)
+    visit_while_node(program_state, node)
+    
+
+
+
 def visit_node(program_state, node):
     node_function_combinations = [
         (RootNode, visit_root_node),
@@ -70,7 +89,8 @@ def visit_node(program_state, node):
         (BinaryOpNode, visit_binary_operator),
         (NumberNode, lambda program_state, node: node.value),
         (IdentifierNode, visit_identifier_node),
-        (PrintNode, visit_print_node)
+        (PrintNode, visit_print_node),
+        (WhileNode, visit_while_node),
     ]
 
     node_funcs = list(filter(lambda x: type(node) == x[0], node_function_combinations))

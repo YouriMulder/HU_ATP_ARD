@@ -1,28 +1,38 @@
 from enum import Enum
 
 class TokenOperatorMath(Enum):
-    PLUS        = "PLUS"
-    MIN         = "MIN"
-    DEVIDE      = "DEVIDE"
-    MULTIPLY    = "MULTIPLY"
+    PLUS            = "PLUS"
+    MIN             = "MIN"
+    DEVIDE          = "DEVIDE"
+    MULTIPLY        = "MULTIPLY"
 
 class tokenOperatorRelational(Enum):
-    EQUALS      = "EQUALS"
+    EQUALS          = "EQUALS"
+    LESS            = "LESS"
+    LESS_EQUAL      = "LESS_EQUAL"
+    GREATER         = "GREATER"
+    GREATER_EQUAL   = "GREATER_EQUAL"
 
 class TokenOperatorAssignment(Enum):
-    ASSIGNMENT = "ASSIGNMENT"
+    ASSIGNMENT      = "ASSIGNMENT"
 
 class TokenOperator():
     # OPERATORS
-    MATH        = TokenOperatorMath
-    RELATIONAL  = tokenOperatorRelational
-    ASSIGNMENT  = TokenOperatorAssignment
+    MATH            = TokenOperatorMath
+    RELATIONAL      = tokenOperatorRelational
+    ASSIGNMENT      = TokenOperatorAssignment
 
 class TokenConstant(Enum):
-    INTEGER     = "INTEGER"
+    INTEGER         = "INTEGER"
 
 class TokenControlFlow(Enum):
-    WHILE     = "WHILE"
+    WHILE           = "WHILE"
+    LPARAN          = "LPAREN"
+    RPARAN          = "RPAREN"
+    LBRACE          = "LBRACE"
+    RBRACE          = "RBRACE"
+    
+    
 
 class TokenDiverse(Enum):
     WHITESPACE  = "WHITESPACE"

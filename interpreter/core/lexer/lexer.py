@@ -14,16 +14,27 @@ class TokenCombination:
 
 def get_matching_token_combination(sequence):
     token_type_combinations = [
-        TokenCombination(TokenSymbol.OPERATOR.MATH.PLUS,         r"\+"),
-        TokenCombination(TokenSymbol.OPERATOR.MATH.MIN,          r"\-"),
-        TokenCombination(TokenSymbol.OPERATOR.MATH.DEVIDE,       r"\/"),
-        TokenCombination(TokenSymbol.OPERATOR.MATH.MULTIPLY,     r"\*"),
-        TokenCombination(TokenSymbol.OPERATOR.ASSIGNMENT.ASSIGNMENT,   r"^:=$"),
-        TokenCombination(TokenSymbol.OPERATOR.RELATIONAL.EQUALS,       r"^:==$"),
+        TokenCombination(TokenSymbol.CONTROL.WHILE,         r"^WhIlE$"),
+        TokenCombination(TokenSymbol.CONTROL.LPARAN,        r"\("),
+        TokenCombination(TokenSymbol.CONTROL.RPARAN,        r"\)"),
+        TokenCombination(TokenSymbol.CONTROL.LBRACE,        r"\{"),
+        TokenCombination(TokenSymbol.CONTROL.RBRACE,        r"\}"),
+
+        TokenCombination(TokenSymbol.OPERATOR.MATH.PLUS,    r"\+"),
+        TokenCombination(TokenSymbol.OPERATOR.MATH.MIN,     r"\-"),
+        TokenCombination(TokenSymbol.OPERATOR.MATH.DEVIDE,  r"\/"),
+        TokenCombination(TokenSymbol.OPERATOR.MATH.MULTIPLY,r"\*"),
+        TokenCombination(TokenSymbol.OPERATOR.ASSIGNMENT.ASSIGNMENT,    r"^:=$"),
         
+        TokenCombination(TokenSymbol.OPERATOR.RELATIONAL.EQUALS,        r"^:==$"),
+        TokenCombination(TokenSymbol.OPERATOR.RELATIONAL.LESS,          r"^:<$"),
+        TokenCombination(TokenSymbol.OPERATOR.RELATIONAL.LESS_EQUAL,    r"^:<=$"),
+        TokenCombination(TokenSymbol.OPERATOR.RELATIONAL.GREATER,       r"^:>$"),
+        TokenCombination(TokenSymbol.OPERATOR.RELATIONAL.GREATER_EQUAL, r"^:>=$"),
+
         TokenCombination(TokenSymbol.CONSTANT.INTEGER,      r"\d+"),
         
-        TokenCombination(TokenSymbol.DIVERSE.SHOW,    r"^ShOw$"),
+        TokenCombination(TokenSymbol.DIVERSE.SHOW,          r"^ShOw$"),
         TokenCombination(TokenSymbol.DIVERSE.ENDOFSTATEMENT,r"!"),
         TokenCombination(TokenSymbol.DIVERSE.IDENTIFIER,    r"[a-zA-Z]"),
     ]
@@ -49,13 +60,14 @@ def tokenize(characters: List[str], tokens=[], sequence: str="") -> List[Token]:
         sequence = sequence + head
 
     if head in (WHITESPACE, ENDOFSTATEMENT) or len(characters) == 0:
-        token_combination = get_matching_token_combination(sequence)
-        tokens.append(Token(
-            token_combination.symbol,
-            sequence
-        ))
+        if sequence != "":
+            token_combination = get_matching_token_combination(sequence)
+            tokens.append(Token(
+                token_combination.symbol,
+                sequence
+            ))
 
-        sequence = ""
+            sequence = ""
     
     if head == ENDOFSTATEMENT:
         token_combination = get_matching_token_combination(head)

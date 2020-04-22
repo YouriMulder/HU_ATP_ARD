@@ -1,4 +1,4 @@
-from .tree import RootNode, IdentifierNode, NumberNode, OperatorNode, BinaryOpNode, AssignmentNode, PrintNode, Tree
+from .tree import WhileNode, RootNode, IdentifierNode, NumberNode, OperatorNode, BinaryOpNode, AssignmentNode, PrintNode, Tree
 
 from ..token import TokenSymbol
 
@@ -56,8 +56,31 @@ def expr(parse_state, initial_term=None):
 
     return node 
 
+def parse_while(parse_state, root_node) -> None:
+    if parse_state.pop_front().symbol != TokenSymbol.CONTROL.WHILE:
+        return None
+        
+    if parse_state.pop_front().symbol != TokenSymbol.CONTROL.LPARAN:
+        return None
+
+    condition_node = parsing(parse_state)
+
+    if parse_state.pop_front().symbol != TokenSymbol.CONTROL.RPARAN:
+        return None
+    
+    execute_node = parsing(parse_state)
+
+    return WhileNode(condition_node, execute_node)
+    
 def parsing(parse_state, root=None):
-    if parse_state.current_token.symbol == TokenSymbol.OPERATOR.ASSIGNMENT.ASSIGNMENT:
+    
+    if parse_state.current_token.symbol == TokenSymbol.CONTROL.LBRACE:
+        parse_state.pop_front()
+        root_node = RootNode([])
+        root_node = create_root_node(parse_state, root_node)
+        return root_node
+    
+    elif parse_state.current_token.symbol == TokenSymbol.OPERATOR.ASSIGNMENT.ASSIGNMENT:
         parse_state.pop_front()
         assignment_node = parsing(parse_state)
         node = AssignmentNode(root, assignment_node)
@@ -71,7 +94,7 @@ def parsing(parse_state, root=None):
         node = IdentifierNode(parse_state.pop_front().value)
         return parsing(parse_state, node)
     
-    elif parse_state.current_token.symbol == TokenSymbol.OPERATOR.RELATIONAL.EQUALS:
+    elif parse_state.current_token.symbol in TokenSymbol.OPERATOR.RELATIONAL:
         node = BinaryOpNode(root, OperatorNode(parse_state.pop_front().value), expr(parse_state))
         return parsing(parse_state, node)
     
@@ -79,14 +102,19 @@ def parsing(parse_state, root=None):
         parse_state.pop_front().value
         return PrintNode(parsing(parse_state, root))
 
+    elif parse_state.current_token.symbol == TokenSymbol.CONTROL.WHILE:
+        return parse_while(parse_state, root)
+
     elif parse_state.current_token.symbol in TokenSymbol.OPERATOR.MATH:
         return expr(parse_state, root)
-
+    
+    elif parse_state.current_token.symbol in (TokenSymbol.CONTROL.RPARAN, TokenSymbol.CONTROL.RBRACE):
+        return root
 
     return root
 
 def create_root_node(parse_state, root_node):
-    if len(parse_state.tokens) == 0 or parse_state.current_token.symbol == TokenSymbol.DIVERSE.EOF:
+    if len(parse_state.tokens) == 0 or parse_state.current_token.symbol in (TokenSymbol.DIVERSE.EOF, TokenSymbol.CONTROL.RBRACE):
         return root_node
     
     node = parsing(parse_state)

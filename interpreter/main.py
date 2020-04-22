@@ -24,7 +24,7 @@ print("Tokenize")
 tokens = lexer(source_file.get_file_content())
 print("ast")
 ast = create_ast(tokens)
+print(ast)
 print("interpret")
 result = interpret(ast) 
 print(result[0])
-        

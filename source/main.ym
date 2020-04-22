@@ -1,6 +1,10 @@
-youri := 10 / 2 + 11!
+youri := 100!
 hank := youri + 1!
 is_dit_waar := 10 + 10 :== 20!
-is_dit_waar := is_dit_waar :== 2!
+is_dit_waar := 1!
 ShOw 1 + 2 + 3 + 43 + 45!
 ShOw is_dit_waar!
+WhIlE ( youri :>= 10 ) {
+    ShOw youri!
+    youri := youri - 1!
+}
