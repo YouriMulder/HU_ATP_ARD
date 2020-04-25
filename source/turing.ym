@@ -1,0 +1,53 @@
+
+in_0 := 1!
+in_1 := 1!
+in_2 := 1!
+in_3 := 1!
+current_in := 0!
+tape_end_reached := 0!
+state := 0!
+
+ShOw in_0!
+ShOw in_1!
+ShOw in_2!
+ShOw in_3!
+
+WhIlE ( tape_end_reached :== 0 ) {
+    ran_state := 0!
+    
+    iF ( state :== 0 ) {
+        ran_state := 1!
+        iF ( current_in :== 0 ) {
+            reset := 0!
+            iF ( reset :== 0 ) { iF ( in_0 :== 0 ) { in_0 := 1! reset := 1! } }
+            iF ( reset :== 0 ) { iF ( in_0 :== 1 ) { in_0 := 0! reset := 1! } }
+        }
+        iF ( current_in :== 1 ) {
+            reset := 0!
+            iF ( reset :== 0 ) { iF ( in_1 :== 0 ) { in_1 := 1! reset := 1! } }
+            iF ( reset :== 0 ) { iF ( in_1 :== 1 ) { in_1 := 0! reset := 1! } }
+        }
+        iF ( current_in :== 2 ) {
+            reset := 0!
+            iF ( reset :== 0 ) { iF ( in_2 :== 0 ) { in_2 := 1! reset := 1! } }
+            iF ( reset :== 0 ) { iF ( in_2 :== 1 ) { in_2 := 0! reset := 1! } }
+        }
+        iF ( current_in :== 3 ) {
+            reset := 0!
+            iF ( reset :== 0 ) { iF ( in_3 :== 0 ) { in_3 := 1! reset := 1! } }
+            iF ( reset :== 0 ) { iF ( in_3 :== 1 ) { in_3 := 0! reset := 1! } }
+        }
+        state := 1!
+    }
+
+    iF ( ran_state :== 0 ) { 
+        iF ( state :== 1 ) {
+            state := 0!
+        }
+    }
+    
+    current_in := current_in + 1!
+    iF ( current_in :> 3 ) {
+        tape_end_reached := 1!
+    }
+}
