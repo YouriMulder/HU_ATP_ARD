@@ -15,6 +15,7 @@ class TokenCombination:
 def get_matching_token_combination(sequence):
     token_type_combinations = [
         TokenCombination(TokenSymbol.CONTROL.WHILE,         r"^WhIlE$"),
+        TokenCombination(TokenSymbol.CONTROL.IF,            r"^iF$"),
         TokenCombination(TokenSymbol.CONTROL.LPARAN,        r"\("),
         TokenCombination(TokenSymbol.CONTROL.RPARAN,        r"\)"),
         TokenCombination(TokenSymbol.CONTROL.LBRACE,        r"\{"),
@@ -40,6 +41,7 @@ def get_matching_token_combination(sequence):
     ]
 
     token_types = list(filter(lambda x: re.match(x.regex, sequence), token_type_combinations))
+    print(sequence)
 
     if len(token_types) == 1:
         return token_types[0]

@@ -26,6 +26,7 @@ class TokenConstant(Enum):
     INTEGER         = "INTEGER"
 
 class TokenControlFlow(Enum):
+    IF              = "IF"
     WHILE           = "WHILE"
     LPARAN          = "LPAREN"
     RPARAN          = "RPAREN"

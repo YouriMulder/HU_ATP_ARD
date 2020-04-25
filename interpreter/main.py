@@ -2,6 +2,8 @@ from path import path
 from core.lexer.lexer import lexer
 from core.parser.ast import create_ast
 from core.interpreter.interpreter import interpret
+import sys
+import threading
 
 class file_input:
     def __init__(self, file_path: str):
@@ -18,13 +20,20 @@ class file_input:
             "File path: " + self.file_path + "\n" \
             + self.file_content
 
-source_file_path = path.source + "main.ym"
-source_file = file_input(source_file_path)
-print("Tokenize")
-tokens = lexer(source_file.get_file_content())
-print("ast")
-ast = create_ast(tokens)
-print(ast)
-print("interpret")
-result = interpret(ast) 
-print(result[0])
+def main():
+    source_file_path = path.source + "turing.ym"
+    source_file = file_input(source_file_path)
+    print("Tokenize")
+    tokens = lexer(source_file.get_file_content())
+    print("ast")
+    ast = create_ast(tokens)
+    print(ast)
+    print("interpret")
+    result = interpret(ast) 
+    print(result[0])
+
+sys.setrecursionlimit(0x100000)
+threading.stack_size(256000000) #set stack to 256mb
+t = threading.Thread(target=main())
+t.start()
+t.join()

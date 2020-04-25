@@ -1,4 +1,4 @@
-from .tree import WhileNode, RootNode, IdentifierNode, NumberNode, OperatorNode, BinaryOpNode, AssignmentNode, PrintNode, Tree
+from .tree import ConditionNode, WhileNode, RootNode, IdentifierNode, NumberNode, OperatorNode, BinaryOpNode, AssignmentNode, PrintNode, Tree
 
 from ..token import TokenSymbol
 
@@ -56,8 +56,8 @@ def expr(parse_state, initial_term=None):
 
     return node 
 
-def parse_while(parse_state, root_node) -> None:
-    if parse_state.pop_front().symbol != TokenSymbol.CONTROL.WHILE:
+def parse_condition(parse_state, root_node, condition_node_type) -> None:
+    if parse_state.pop_front().symbol not in (TokenSymbol.CONTROL.IF, TokenSymbol.CONTROL.WHILE):
         return None
         
     if parse_state.pop_front().symbol != TokenSymbol.CONTROL.LPARAN:
@@ -70,7 +70,7 @@ def parse_while(parse_state, root_node) -> None:
     
     execute_node = parsing(parse_state)
 
-    return WhileNode(condition_node, execute_node)
+    return condition_node_type(condition_node, execute_node)
     
 def parsing(parse_state, root=None):
     
@@ -102,8 +102,11 @@ def parsing(parse_state, root=None):
         parse_state.pop_front().value
         return PrintNode(parsing(parse_state, root))
 
+    elif parse_state.current_token.symbol == TokenSymbol.CONTROL.IF:
+        return parse_condition(parse_state, root, ConditionNode)
+
     elif parse_state.current_token.symbol == TokenSymbol.CONTROL.WHILE:
-        return parse_while(parse_state, root)
+        return parse_condition(parse_state, root, WhileNode)
 
     elif parse_state.current_token.symbol in TokenSymbol.OPERATOR.MATH:
         return expr(parse_state, root)
