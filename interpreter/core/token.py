@@ -33,8 +33,6 @@ class TokenControlFlow(Enum):
     LBRACE          = "LBRACE"
     RBRACE          = "RBRACE"
     
-    
-
 class TokenDiverse(Enum):
     WHITESPACE  = "WHITESPACE"
     SHOW        = "SHOW"

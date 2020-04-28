@@ -10,6 +10,10 @@ class RootNode:
     def __init__(self, nodes):
         self.nodes = nodes
 
+    def __str__(self):
+        result = map(lambda node: str(node), self.nodes)
+        return '[' + ' '.join(result) + ']'
+
 class BinaryOpNode:
     def __init__(self, left, operator, right):
         self.left = left
@@ -31,18 +35,21 @@ class OperatorNode:
         self.value = str(value)
 
     def __str__(self):
-        return "OperatorNode: " + str(self.value)
+        return str(self.value)
 
 class NumberNode:
     def __init__(self, value):
         self.value = int(value)
 
     def __str__(self):
-        return "NumberNode: " + str(self.value)
+        return str(self.value)
 
 class IdentifierNode:
     def __init__(self, value):
         self.value = str(value)
+    
+    def __str__(self):
+        return str(self.value)
 
 class PrintNode:
     def __init__(self, print_node):
@@ -52,6 +59,9 @@ class ConditionNode:
     def __init__(self, condition_node, execute_node):
         self.condition_node = condition_node
         self.execute_node = execute_node
+    
+    def __str__(self):
+        return str(self.condition_node) + " -> " + str(self.execute_node)
 
 
 class WhileNode(ConditionNode):

@@ -1,6 +1,7 @@
 from .tree import ConditionNode, WhileNode, RootNode, IdentifierNode, NumberNode, OperatorNode, BinaryOpNode, AssignmentNode, PrintNode, Tree
+from ..token import TokenSymbol, Token
 
-from ..token import TokenSymbol
+import copy
 
 def token_is_operator(token):
     return token.symbol in TokenSymbol.OPERATOR
@@ -8,13 +9,14 @@ def token_is_operator(token):
 class ParseState:
     def __init__(self, tokens):
         self.tokens = tokens
-        self.current_token = self.tokens[0]
-
-    def pop_front(self):
-        item = self.tokens.pop(0)
         if len(self.tokens) > 0:
             self.current_token = self.tokens[0]
-        return item
+        else:
+            self.current_token = Token(TokenSymbol.DIVERSE.EOF, "")
+
+def parse_pop_first_token(parse_state):
+    item = parse_state.current_token
+    return item, ParseState(parse_state.tokens[1:])
 
 def factor(parse_state):
     """
@@ -22,18 +24,22 @@ def factor(parse_state):
     """
 
     if parse_state.current_token.symbol == TokenSymbol.CONSTANT.INTEGER:
-        return NumberNode(parse_state.pop_front().value)
+        token, parse_state = parse_pop_first_token(parse_state)
+        return NumberNode(token.value), parse_state
     
     if parse_state.current_token.symbol == TokenSymbol.DIVERSE.IDENTIFIER:
-        return IdentifierNode(parse_state.pop_front().value)
+        token, parse_state = parse_pop_first_token(parse_state)
+        return IdentifierNode(token.value), parse_state
     
-    return None
+    return None, parse_state
 
 def term_check_multiply_or_devide(parse_state, root):
     if parse_state.current_token.symbol not in (TokenSymbol.OPERATOR.MATH.MULTIPLY, TokenSymbol.OPERATOR.MATH.DEVIDE):
-        return root
+        return root, parse_state
     
-    node = BinaryOpNode(left=root, operator=OperatorNode(parse_state.pop_front().value), right=factor(parse_state))
+    token, parse_state = parse_pop_first_token(parse_state)
+    right_node, parse_state = factor(parse_state)
+    node = BinaryOpNode(left=root, operator=OperatorNode(token.value), right=right_node)
     return term_check_multiply_or_devide(parse_state, node)
 
 def term(parse_state):
@@ -41,15 +47,17 @@ def term(parse_state):
     term   : factor ((MUL | DIV) factor)*
     """
 
-    node = factor(parse_state)
+    node, parse_state = factor(parse_state)
     
     return term_check_multiply_or_devide(parse_state, node)
 
 def expr_check_plus_or_minus(parse_state, root):
     if parse_state.current_token.symbol not in (TokenSymbol.OPERATOR.MATH.PLUS, TokenSymbol.OPERATOR.MATH.MIN):
-        return root
+        return root, parse_state
     
-    node = BinaryOpNode(left=root, operator=OperatorNode(parse_state.pop_front().value), right=term(parse_state))
+    token, parse_state = parse_pop_first_token(parse_state)
+    right_node, parse_state = term(parse_state)
+    node = BinaryOpNode(left=root, operator=OperatorNode(token.value), right=right_node)
     return expr_check_plus_or_minus(parse_state, node)
 
 def expr(parse_state, initial_term=None):
@@ -59,87 +67,101 @@ def expr(parse_state, initial_term=None):
     factor : INTEGER | IDENTIFIER
     """
     if initial_term == None:
-        node = term(parse_state)
+        node, parse_state = term(parse_state)
     else:
         node = initial_term
 
     return expr_check_plus_or_minus(parse_state, node)
 
 def parse_condition(parse_state, root_node, condition_node_type) -> None:
-    if parse_state.pop_front().symbol not in (TokenSymbol.CONTROL.IF, TokenSymbol.CONTROL.WHILE):
-        return None
-        
-    if parse_state.pop_front().symbol != TokenSymbol.CONTROL.LPARAN:
-        return None
-
-    condition_node = parsing(parse_state)
-
-    if parse_state.pop_front().symbol != TokenSymbol.CONTROL.RPARAN:
-        return None
     
-    execute_node = parsing(parse_state)
+    token, parse_state = parse_pop_first_token(parse_state)
+    if token.symbol != TokenSymbol.CONTROL.LPARAN:
+        print("LPARAN expected got:", token)
+        return None, parse_state
 
-    return condition_node_type(condition_node, execute_node)
+    condition_node, parse_state = parsing(parse_state)
+    
+    token, parse_state = parse_pop_first_token(parse_state)
+    if token.symbol != TokenSymbol.CONTROL.RPARAN:
+        print("RPARAN expected got:", token)
+        return None, parse_state
+
+    token, parse_state = parse_pop_first_token(parse_state)
+    if token.symbol != TokenSymbol.CONTROL.LBRACE:
+        print("LBRACE expected got:", token)
+        return None, parse_state
+    
+    execute_node, parse_state = create_root_node(parse_state)
+    node = condition_node_type(condition_node, execute_node)
+
+    token, parse_state = parse_pop_first_token(parse_state)
+    if token.symbol != TokenSymbol.CONTROL.RBRACE:
+        print("RBRACE expected got:", token)
+        return None, parse_state
+    
+    return node, parse_state
     
 def parsing(parse_state, root=None):
-    
-    if parse_state.current_token.symbol == TokenSymbol.CONTROL.LBRACE:
-        parse_state.pop_front()
-        root_node = RootNode([])
-        root_node = create_root_node(parse_state, root_node)
-        return root_node
-    
-    elif parse_state.current_token.symbol == TokenSymbol.OPERATOR.ASSIGNMENT.ASSIGNMENT:
-        parse_state.pop_front()
-        assignment_node = parsing(parse_state)
+    if parse_state.current_token.symbol == TokenSymbol.OPERATOR.ASSIGNMENT.ASSIGNMENT:
+        token, parse_state = parse_pop_first_token(parse_state)
+        assignment_node, parse_state = parsing(parse_state)
         node = AssignmentNode(root, assignment_node)
         return parsing(parse_state, node)
     
     elif parse_state.current_token.symbol == TokenSymbol.CONSTANT.INTEGER:
-        node = expr(parse_state)
+        node, parse_state = expr(parse_state)
         return parsing(parse_state, node)
     
     elif parse_state.current_token.symbol == TokenSymbol.DIVERSE.IDENTIFIER:
-        node = IdentifierNode(parse_state.pop_front().value)
+        token, parse_state = parse_pop_first_token(parse_state)
+        node = IdentifierNode(token.value)
         return parsing(parse_state, node)
     
     elif parse_state.current_token.symbol in TokenSymbol.OPERATOR.RELATIONAL:
-        node = BinaryOpNode(root, OperatorNode(parse_state.pop_front().value), expr(parse_state))
+        token, parse_state = parse_pop_first_token(parse_state)
+        expr_node, parse_state = expr(parse_state)
+        node = BinaryOpNode(root, OperatorNode(token.value), expr_node)
         return parsing(parse_state, node)
     
     elif parse_state.current_token.symbol == TokenSymbol.DIVERSE.SHOW:
-        parse_state.pop_front().value
-        return PrintNode(parsing(parse_state, root))
+        token, parse_state = parse_pop_first_token(parse_state)
+        print_node_content, parse_state = parsing(parse_state, root)
+        return PrintNode(print_node_content), parse_state
 
     elif parse_state.current_token.symbol == TokenSymbol.CONTROL.IF:
+        token, parse_state = parse_pop_first_token(parse_state)
         return parse_condition(parse_state, root, ConditionNode)
 
     elif parse_state.current_token.symbol == TokenSymbol.CONTROL.WHILE:
+        token, parse_state = parse_pop_first_token(parse_state)
         return parse_condition(parse_state, root, WhileNode)
 
     elif parse_state.current_token.symbol in TokenSymbol.OPERATOR.MATH:
         return expr(parse_state, root)
     
-    elif parse_state.current_token.symbol in (TokenSymbol.CONTROL.RPARAN, TokenSymbol.CONTROL.RBRACE):
-        return root
+    elif parse_state.current_token.symbol == TokenSymbol.DIVERSE.ENDOFSTATEMENT:
+        return root, parse_state
 
-    return root
+    return root, parse_state
 
-def create_root_node(parse_state, root_node):
-    if len(parse_state.tokens) == 0 or parse_state.current_token.symbol in (TokenSymbol.DIVERSE.EOF, TokenSymbol.CONTROL.RBRACE):
-        return root_node
+def create_root_node(parse_state, nodes=[]):
+    if parse_state.current_token.symbol in (TokenSymbol.DIVERSE.EOF, TokenSymbol.CONTROL.RBRACE):
+        return RootNode(nodes), parse_state
+
+    node, parse_state = parsing(parse_state)
     
-    node = parsing(parse_state)
-    if parse_state.pop_front().symbol != TokenSymbol.DIVERSE.ENDOFSTATEMENT:
-        print("create root nodes error")
+    if parse_state.current_token.symbol == TokenSymbol.DIVERSE.ENDOFSTATEMENT:
+        token, parse_state = parse_pop_first_token(parse_state)
 
-    new_root_node = root_node
-    new_root_node.nodes.append(node)
-    return create_root_node(parse_state, new_root_node)
+    return create_root_node(parse_state, nodes + [node])
+
+def create_ast(parse_state):
+    if len(parse_state.tokens) == 0 or parse_state.current_token == Token.Diverse.EOF:
+        return Tree(root_node)
 
 def create_ast(tokens):
     parse_state = ParseState(tokens)
-    root_node = RootNode([])
-    root_node = create_root_node(parse_state, root_node)
+    root_node, parse_state = create_root_node(parse_state)
     tree = Tree(root_node)
     return tree

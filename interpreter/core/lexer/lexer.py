@@ -41,7 +41,6 @@ def get_matching_token_combination(sequence):
     ]
 
     token_types = list(filter(lambda x: re.match(x.regex, sequence), token_type_combinations))
-    print(sequence)
 
     if len(token_types) == 1:
         return token_types[0]
@@ -61,7 +60,7 @@ def tokenize(characters: List[str], tokens=[], sequence: str="") -> List[Token]:
     if head not in (WHITESPACE, NEWLINE, ENDOFSTATEMENT):
         sequence = sequence + head
 
-    if head in (WHITESPACE, ENDOFSTATEMENT) or len(characters) == 0:
+    if head in (WHITESPACE, ENDOFSTATEMENT, NEWLINE) or len(characters) == 0:
         if sequence != "":
             token_combination = get_matching_token_combination(sequence)
             tokens.append(Token(

@@ -13,6 +13,7 @@ ShOw in_2!
 ShOw in_3!
 
 WhIlE ( tape_end_reached :== 0 ) {
+    
     ran_state := 0!
     
     iF ( state :== 0 ) {
@@ -20,8 +21,8 @@ WhIlE ( tape_end_reached :== 0 ) {
         iF ( current_in :== 0 ) {
             reset := 0!
             iF ( reset :== 0 ) { iF ( in_0 :== 0 ) { in_0 := 1! reset := 1! } }
-            iF ( reset :== 0 ) { iF ( in_0 :== 1 ) { in_0 := 0! reset := 1! } }
-        }
+            iF ( reset :== 0 ) { iF ( in_0 :== 1 ) { in_0 := 0! reset := 1! } } }
+        
         iF ( current_in :== 1 ) {
             reset := 0!
             iF ( reset :== 0 ) { iF ( in_1 :== 0 ) { in_1 := 1! reset := 1! } }
@@ -47,7 +48,10 @@ WhIlE ( tape_end_reached :== 0 ) {
     }
     
     current_in := current_in + 1!
+    
     iF ( current_in :> 3 ) {
         tape_end_reached := 1!
     }
 }
+
+test := 1!

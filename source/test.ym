@@ -1,1 +1,10 @@
-youri := 10 + 10 + 12 / 2
+counter := 10!
+counter := 11!
+counter := 12!
+counter := 13!
+counter := 14!
+
+iF ( 10 :== 10 ) {
+    counter := 15!
+    counter := counter + 2!
+}

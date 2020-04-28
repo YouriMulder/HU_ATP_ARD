@@ -21,16 +21,15 @@ class file_input:
             + self.file_content
 
 def main():
-    source_file_path = path.source + "test.ym"
+    source_file_path = path.source + "turing.ym"
     source_file = file_input(source_file_path)
     print("Tokenize")
     tokens = lexer(source_file.get_file_content())
     print("ast")
     ast = create_ast(tokens)
-    print(ast)
     print("interpret")
     result = interpret(ast) 
-    print(result[0])
+    print(result)
 
 sys.setrecursionlimit(0x100000)
 threading.stack_size(256000000) #set stack to 256mb
