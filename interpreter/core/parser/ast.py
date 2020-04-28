@@ -29,16 +29,28 @@ def factor(parse_state):
     
     return None
 
+def term_check_multiply_or_devide(parse_state, root):
+    if parse_state.current_token.symbol not in (TokenSymbol.OPERATOR.MATH.MULTIPLY, TokenSymbol.OPERATOR.MATH.DEVIDE):
+        return root
+    
+    node = BinaryOpNode(left=root, operator=OperatorNode(parse_state.pop_front().value), right=factor(parse_state))
+    return term_check_multiply_or_devide(parse_state, node)
+
 def term(parse_state):
     """
     term   : factor ((MUL | DIV) factor)*
     """
 
     node = factor(parse_state)
-    while parse_state.current_token.symbol in (TokenSymbol.OPERATOR.MATH.MULTIPLY, TokenSymbol.OPERATOR.MATH.DEVIDE):
-        node = BinaryOpNode(left=node, operator=OperatorNode(parse_state.pop_front().value), right=factor(parse_state))
     
-    return node
+    return term_check_multiply_or_devide(parse_state, node)
+
+def expr_check_plus_or_minus(parse_state, root):
+    if parse_state.current_token.symbol not in (TokenSymbol.OPERATOR.MATH.PLUS, TokenSymbol.OPERATOR.MATH.MIN):
+        return root
+    
+    node = BinaryOpNode(left=root, operator=OperatorNode(parse_state.pop_front().value), right=term(parse_state))
+    return expr_check_plus_or_minus(parse_state, node)
 
 def expr(parse_state, initial_term=None):
     """
@@ -51,10 +63,7 @@ def expr(parse_state, initial_term=None):
     else:
         node = initial_term
 
-    while parse_state.current_token.symbol in (TokenSymbol.OPERATOR.MATH.PLUS, TokenSymbol.OPERATOR.MATH.MIN):
-        node = BinaryOpNode(left=node, operator=OperatorNode(parse_state.pop_front().value), right=term(parse_state))
-
-    return node 
+    return expr_check_plus_or_minus(parse_state, node)
 
 def parse_condition(parse_state, root_node, condition_node_type) -> None:
     if parse_state.pop_front().symbol not in (TokenSymbol.CONTROL.IF, TokenSymbol.CONTROL.WHILE):

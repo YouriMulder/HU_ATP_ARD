@@ -21,7 +21,7 @@ class file_input:
             + self.file_content
 
 def main():
-    source_file_path = path.source + "turing.ym"
+    source_file_path = path.source + "test.ym"
     source_file = file_input(source_file_path)
     print("Tokenize")
     tokens = lexer(source_file.get_file_content())
