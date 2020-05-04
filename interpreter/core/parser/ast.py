@@ -15,19 +15,27 @@ class ParseState:
         else:
             self.current_token = Token(TokenSymbol.DIVERSE.EOF, "")
 
-
-def token_is_operator(token: Token) -> bool:
-    return token.symbol in TokenSymbol.OPERATOR
-
-
 def parse_pop_first_token(parse_state: ParseState) -> Tuple[Token, ParseState]:
+    """
+    @brief This function pops the first token of the ParseState
+    @param parse_state The current ParseState of the abstract syntax tree parsing.
+    @return A tuple containing the popped token and the new ParseState
+    """
     item = parse_state.current_token
     return item, ParseState(parse_state.tokens[1:])
 
 
 def factor(parse_state: ParseState) -> Tuple[Union[None, TreeNode], ParseState]:
     """
-    factor : INTEGER
+    @brief This function creates a factor.
+    @details
+        factor : INTEGER | IDENTIFIER
+        This function creates either a:
+        number or 
+        identifier node.
+        If none of the above is found None is returned
+    @param parse_state The current ParseState of the abstract syntax tree parsing.
+    @return A tuple containing a (TreeNode or None) and the current ParseState.
     """
 
     if parse_state.current_token.symbol == TokenSymbol.CONSTANT.INTEGER:
@@ -41,53 +49,70 @@ def factor(parse_state: ParseState) -> Tuple[Union[None, TreeNode], ParseState]:
     return None, parse_state
 
 
-def term_check_multiply_or_devide(parse_state: ParseState, root: TreeNode) -> Tuple[TreeNode, ParseState]:
-    if parse_state.current_token.symbol not in (TokenSymbol.OPERATOR.MATH.MULTIPLY, TokenSymbol.OPERATOR.MATH.DEVIDE):
-        return root, parse_state
-
-    token, parse_state = parse_pop_first_token(parse_state)
-    right_node, parse_state = factor(parse_state)
-    node = BinaryOpNode(left=root, operator=OperatorNode(
-        token.value), right=right_node)
-    return term_check_multiply_or_devide(parse_state, node)
-
-
-def term(parse_state):
+def term(parse_state: ParseState) -> Tuple[TreeNode, ParseState]:
     """
-    term   : factor ((MUL | DIV) factor)*
+    @brief This function creates a term
+    @details
+        term   : factor ((MUL | DIV) factor)*
+    @param parse_state The current ParseState of the abstract syntax tree parsing.
+    @return Tuple containing a TreeNode with the current found expression and the current ParseState.
     """
 
     node, parse_state = factor(parse_state)
 
-    return term_check_multiply_or_devide(parse_state, node)
+    return expr_check_operator(parse_state, node, (TokenSymbol.OPERATOR.MATH.MULTIPLY, TokenSymbol.OPERATOR.MATH.DEVIDE))
 
 
-def expr_check_plus_or_minus(parse_state: ParseState, root: TreeNode) -> Tuple[TreeNode, ParseState]:
-    if parse_state.current_token.symbol not in (TokenSymbol.OPERATOR.MATH.PLUS, TokenSymbol.OPERATOR.MATH.MIN):
+def expr_check_operator(parse_state: ParseState, root: TreeNode, check_operators: Tuple[TokenSymbol.OPERATOR]) -> Tuple[TreeNode, ParseState]:
+    """
+    expr :: ParseState -> TreeNode -> operators -> (TreeNode, ParseState)
+    @brief This function creates a binary node if token in check_operators.
+    @details
+        expr   : term ((PLUS | MINUS) term)*
+        This functions checks if the current token is equal to one of the check_operators.
+        If this is equal to one of the check_operators the operator is created and returned.
+    @param parse_state The current ParseState of the abstract syntax tree parsing.
+    @param root A TreeNode containing the current expression.
+    @param check_operators The operators which are checked upon.
+    @return Tuple containing a TreeNode with the current found expression and the current ParseState.
+    """
+    
+    if parse_state.current_token.symbol not in check_operators:
         return root, parse_state
 
     token, parse_state = parse_pop_first_token(parse_state)
     right_node, parse_state = term(parse_state)
     node = BinaryOpNode(left=root, operator=OperatorNode(
         token.value), right=right_node)
-    return expr_check_plus_or_minus(parse_state, node)
+    return expr_check_operator(parse_state, node, check_operators)
 
 
 def expr(parse_state: ParseState, initial_term: Union[None, TreeNode] = None) -> Tuple[TreeNode, ParseState]:
     """
-    expr   : term ((PLUS | MINUS) term)*
-    term   : factor ((MUL | DIV) factor)*
-    factor : INTEGER | IDENTIFIER
+    expr :: ParseState -> None | TreeNode -> (TreeNode, ParseState)    
+    @brief This function is used to parse an expression.
+    @details
+        expr : term ((PLUS | MINUS) term)*
+    @param parse_state The current ParseState of the abstract syntax tree parsing.
+    @param initial_term The initial term found to start the expression with.
+    @return A tuple containing the treeNode(expression) and current ParseState.
     """
     if initial_term == None:
         node, parse_state = term(parse_state)
     else:
         node = initial_term
 
-    return expr_check_plus_or_minus(parse_state, node)
+    return expr_check_operator(parse_state, node, (TokenSymbol.OPERATOR.MATH.PLUS, TokenSymbol.OPERATOR.MATH.MIN))
 
 
-def parse_condition(parse_state: ParseState, root_node: TreeNode, condition_node_type: Union[ConditionNode, WhileNode]) -> Tuple[Union[None, TreeNode], ParseState]:
+def parse_condition(parse_state: ParseState, condition_node_type: type) -> Tuple[Union[None, TreeNode], ParseState]:
+    """
+    create_ast :: ParseState -> type -> (None|TreeNode, ParseState) 
+    @brief Function used to parse a condition node (while, if).
+    @param parse_state The current ParseState of the abstract syntax tree parsing.
+    @condition_node_type The type of the condition node ConditionNode, WhileNode
+    @return A tuple containing the created condition node and the current ParseState. 
+    """
 
     token, parse_state = parse_pop_first_token(parse_state)
     if token.symbol != TokenSymbol.CONTROL.LPARAN:
@@ -114,6 +139,16 @@ def parse_condition(parse_state: ParseState, root_node: TreeNode, condition_node
 
 
 def parsing(parse_state: ParseState, root: Union[None, TreeNode] = None) -> Tuple[TreeNode, ParseState]:
+    """
+    create_ast :: ParseState -> Maybe TreeNode -> (TreeNode, ParseState)
+    @brief Function used to parse tokens until end of statement or other end of code block like } or EOF.
+    @details
+        Function creates a new node using a given token in de parse_state.
+        It creates a new node and makes it as a child of the root node.
+    @param parse_state The current ParseState of the abstract syntax tree parsing.
+    @param root the previous node created used as root for the current node.
+    @return A tuple containing the created TreeNode containing his children and the current ParseState. 
+    """
 
     if parse_state.current_token.symbol == TokenSymbol.OPERATOR.ASSIGNMENT.ASSIGNMENT:
         token, parse_state = parse_pop_first_token(parse_state)
@@ -143,11 +178,11 @@ def parsing(parse_state: ParseState, root: Union[None, TreeNode] = None) -> Tupl
 
     elif parse_state.current_token.symbol == TokenSymbol.CONTROL.IF:
         token, parse_state = parse_pop_first_token(parse_state)
-        return parse_condition(parse_state, root, ConditionNode)
+        return parse_condition(parse_state, ConditionNode)
 
     elif parse_state.current_token.symbol == TokenSymbol.CONTROL.WHILE:
         token, parse_state = parse_pop_first_token(parse_state)
-        return parse_condition(parse_state, root, WhileNode)
+        return parse_condition(parse_state, WhileNode)
 
     elif parse_state.current_token.symbol in TokenSymbol.OPERATOR.MATH:
         return expr(parse_state, root)
@@ -158,21 +193,33 @@ def parsing(parse_state: ParseState, root: Union[None, TreeNode] = None) -> Tupl
     return root, parse_state
 
 
-def create_root_node(parse_state: ParseState, nodes: List[TreeNode] = []) -> Tuple[RootNode, ParseState]:
+def create_root_node(parse_state: ParseState, child_nodes: List[TreeNode] = []) -> Tuple[RootNode, ParseState]:
+    """
+    create_ast :: ParseState -> [TreeNode] -> (RootNode, ParseState)
+    @brief Function used to create a root node and his children nodes.
+    @param parse_state The current ParseState of the abstract syntax tree parsing.
+    @param child_nodes All the current child nodes of the root node.
+    @return A tuple containing the created root node and the current ParseState. 
+    """
 
     if parse_state.current_token.symbol in (TokenSymbol.DIVERSE.EOF, TokenSymbol.CONTROL.RBRACE):
-        return RootNode(nodes), parse_state
+        return RootNode(child_nodes), parse_state
 
     node, parse_state = parsing(parse_state)
 
     if parse_state.current_token.symbol == TokenSymbol.DIVERSE.ENDOFSTATEMENT:
         token, parse_state = parse_pop_first_token(parse_state)
 
-    return create_root_node(parse_state, nodes + [node])
+    return create_root_node(parse_state, child_nodes + [node])
 
 
 def create_ast(tokens: List[Token]) -> Tree:
-
+    """
+    create_ast :: [Token] -> Tree
+    @brief Function used to create an abstract syntax tree using tokens.
+    @param token A list of containing all the tokens to create an ast.
+    @return A Tree containing the root node of the abstract syntax tree. 
+    """
     parse_state = ParseState(tokens)
     root_node, parse_state = create_root_node(parse_state)
     tree = Tree(root_node)

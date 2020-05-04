@@ -20,7 +20,7 @@ class TokenOperatorAssignment(Enum):
     ASSIGNMENT = "ASSIGNMENT"
 
 
-class TokenOperator():
+class TokenOperator:
     # OPERATORS
     MATH = TokenOperatorMath
     RELATIONAL = tokenOperatorRelational

@@ -5,7 +5,7 @@ class TreeNode:
     pass
 
 
-class RootNode:
+class RootNode(TreeNode):
     def __init__(self, nodes: List[TreeNode]):
         self.nodes = nodes
 
@@ -14,7 +14,7 @@ class RootNode:
         return '[' + ' '.join(result) + ']'
 
 
-class IdentifierNode:
+class IdentifierNode(TreeNode):
     def __init__(self, value: str):
         self.value = value
 
@@ -22,7 +22,7 @@ class IdentifierNode:
         return self.value
 
 
-class OperatorNode:
+class OperatorNode(TreeNode):
     def __init__(self, value: str):
         self.value = value
 
@@ -30,7 +30,7 @@ class OperatorNode:
         return self.value
 
 
-class BinaryOpNode:
+class BinaryOpNode(TreeNode):
     def __init__(self, left: TreeNode, operator: OperatorNode, right: TreeNode):
         self.left = left
         self.operator = operator
@@ -48,7 +48,7 @@ class AssignmentNode(BinaryOpNode):
         BinaryOpNode.__init__(self, identifier, ":=", expr)
 
 
-class NumberNode:
+class NumberNode(TreeNode):
     def __init__(self, value: str):
         self.value = int(value)
 
@@ -56,7 +56,7 @@ class NumberNode:
         return str(self.value)
 
 
-class PrintNode:
+class PrintNode(TreeNode):
     def __init__(self, print_node: TreeNode):
         self.print_node = print_node
 
@@ -64,7 +64,7 @@ class PrintNode:
         return str(self.print_node)
 
 
-class ConditionNode:
+class ConditionNode(TreeNode):
     def __init__(self, condition_node: TreeNode, execute_node: TreeNode):
         self.condition_node = condition_node
         self.execute_node = execute_node

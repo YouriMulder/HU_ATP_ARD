@@ -13,12 +13,15 @@ class ProgramState:
         return str(self.variables)
 
 
-def program_state_decorator(f: Callable[[ProgramState, TreeNode], any], program_state: ProgramState, node: TreeNode):
-    output = f(program_state, node)
-    if type(output) != tuple:
-        return output, program_state
+def program_state_decorator(f: Callable[[ProgramState, TreeNode], any]):
+    def argument_wrapper(program_state: ProgramState, node: TreeNode):
+        output = f(program_state, node)
+        if type(output) != tuple:
+            return output, program_state
 
-    return output
+        return output
+    
+    return argument_wrapper
 
 
 def visit_root_nodes(program_state: ProgramState, nodes: List[TreeNode]) -> Tuple[None, ProgramState]:
@@ -62,8 +65,8 @@ def visit_binary_operator(program_state: ProgramState, binary_operator_node: Bin
     output_left, program_state_left = visit_node(
         program_state, binary_operator_node.left)
     output_right, program_state_right = visit_node(
-        program_state, binary_operator_node.right)
-    return func(output_left, output_right)
+        program_state_left, binary_operator_node.right)
+    return func(output_left, output_right), program_state_right
 
 
 def visit_assignment_node(program_state: ProgramState, assignment_node: AssignmentNode) -> Tuple[None, ProgramState]:
@@ -77,7 +80,7 @@ def visit_assignment_node(program_state: ProgramState, assignment_node: Assignme
 def visit_identifier_node(program_state: ProgramState, identifier_node: IdentifierNode) -> Union[None, any]:
     if identifier_node.value in program_state.variables.keys():
         return program_state.variables[identifier_node.value]
-
+    
     return None
 
 
@@ -103,9 +106,9 @@ def visit_while_node(program_state: ProgramState, while_node: WhileNode) -> Tupl
         return output, program_state
 
     output, program_state = visit_node(program_state, while_node.execute_node)
-    visit_while_node(program_state, while_node)
+    return visit_while_node(program_state, while_node)
 
-
+@program_state_decorator
 def visit_node(program_state: ProgramState, node: TreeNode) -> Union[None, Tuple[any, ProgramState]]:
     node_function_combinations = [
         (RootNode, visit_root_node),
@@ -117,12 +120,11 @@ def visit_node(program_state: ProgramState, node: TreeNode) -> Union[None, Tuple
         (ConditionNode, visit_condition_node),
         (WhileNode, visit_while_node),
     ]
-
     node_funcs = list(filter(lambda x: type(node) ==
                              x[0], node_function_combinations))
     if len(node_funcs) == 1:
         visit_node_func = node_funcs[0][1]
-        return program_state_decorator(visit_node_func, program_state, node)
+        return visit_node_func(program_state, node)
 
     return None
 

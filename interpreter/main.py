@@ -8,27 +8,28 @@ import sys
 import threading
 
 
-class file_input:
-    def __init__(self, file_path: str):
-        self.file_path = file_path
-        self.file_content = self.get_file_content()
-
-    def get_file_content(self) -> str:
-        with open(self.file_path, 'r') as opened_file:
-            data = opened_file.read()
-        return data
-
-    def __str__(self) -> str:
-        return \
-            "File path: " + self.file_path + "\n" \
-            + self.file_content
-
-
 def main() -> None:
-    source_file = file_input(Path.source_turing)
+    """
+    @brief This function is used to start the program.
+    @details
+        This function executes the four steps of the interpreter.
+        1. Getting the source file content 
+        2. Create tokens from the source file content
+        3. Create abstract syntax tree from the tokens
+        4. Interpret the abstract syntax tree
+    """
+
+    source_file_path = Path.source_turing
+
+    source_file_content = None
+    with open(source_file_path, 'r') as opened_file:
+        source_file_content = opened_file.read()
+
+    if source_file_content == None:
+        return
 
     print("Tokenize")
-    tokens = lexer(source_file.get_file_content())
+    tokens = lexer(source_file_content)
 
     print("ast")
     ast = create_ast(tokens)
