@@ -1,7 +1,9 @@
 from typing import List
 
+
 class TreeNode:
     pass
+
 
 class RootNode:
     def __init__(self, nodes: List[TreeNode]):
@@ -11,12 +13,14 @@ class RootNode:
         result = map(lambda node: str(node), self.nodes)
         return '[' + ' '.join(result) + ']'
 
+
 class IdentifierNode:
     def __init__(self, value: str):
         self.value = value
-    
+
     def __str__(self) -> str:
         return self.value
+
 
 class OperatorNode:
     def __init__(self, value: str):
@@ -24,6 +28,7 @@ class OperatorNode:
 
     def __str__(self) -> str:
         return self.value
+
 
 class BinaryOpNode:
     def __init__(self, left: TreeNode, operator: OperatorNode, right: TreeNode):
@@ -37,9 +42,11 @@ class BinaryOpNode:
             str(self.operator) + " " + \
             "(" + str(self.right) + ")"
 
+
 class AssignmentNode(BinaryOpNode):
     def __init__(self, identifier: IdentifierNode, expr: TreeNode):
         BinaryOpNode.__init__(self, identifier, ":=", expr)
+
 
 class NumberNode:
     def __init__(self, value: str):
@@ -48,6 +55,7 @@ class NumberNode:
     def __str__(self) -> str:
         return str(self.value)
 
+
 class PrintNode:
     def __init__(self, print_node: TreeNode):
         self.print_node = print_node
@@ -55,13 +63,15 @@ class PrintNode:
     def __str__(self) -> str:
         return str(self.print_node)
 
+
 class ConditionNode:
     def __init__(self, condition_node: TreeNode, execute_node: TreeNode):
         self.condition_node = condition_node
         self.execute_node = execute_node
-    
+
     def __str__(self) -> str:
         return str(self.condition_node) + " -> " + str(self.execute_node)
+
 
 class WhileNode(ConditionNode):
     def __init__(self, condition_node, execute_node):
@@ -69,6 +79,7 @@ class WhileNode(ConditionNode):
 
     def __str__(self) -> str:
         return ConditionNode.__str__(self)
+
 
 class Tree:
     def __init__(self, root_node: TreeNode):
