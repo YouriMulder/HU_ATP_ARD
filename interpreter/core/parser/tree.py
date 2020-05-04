@@ -1,69 +1,79 @@
-class Tree:
-    def __init__(self, root_node):
-        self.root_node = root_node
+from typing import List
 
-    def __str__(self):
-        node_strings = list(map(lambda node: str(node), self.root_node.nodes))
-        return "\n".join(node_strings)
+class TreeNode:
+    pass
 
 class RootNode:
-    def __init__(self, nodes):
+    def __init__(self, nodes: List[TreeNode]):
         self.nodes = nodes
 
-    def __str__(self):
+    def __str__(self) -> str:
         result = map(lambda node: str(node), self.nodes)
         return '[' + ' '.join(result) + ']'
 
+class IdentifierNode:
+    def __init__(self, value: str):
+        self.value = value
+    
+    def __str__(self) -> str:
+        return self.value
+
+class OperatorNode:
+    def __init__(self, value: str):
+        self.value = value
+
+    def __str__(self) -> str:
+        return self.value
+
 class BinaryOpNode:
-    def __init__(self, left, operator, right):
+    def __init__(self, left: TreeNode, operator: OperatorNode, right: TreeNode):
         self.left = left
         self.operator = operator
         self.right = right
 
-    def __str__(self):
+    def __str__(self) -> str:
         return \
             "(" + str(self.left) + ") " + \
             str(self.operator) + " " + \
             "(" + str(self.right) + ")"
 
 class AssignmentNode(BinaryOpNode):
-    def __init__(self, identifier, expr):
+    def __init__(self, identifier: IdentifierNode, expr: TreeNode):
         BinaryOpNode.__init__(self, identifier, ":=", expr)
 
-class OperatorNode:
-    def __init__(self, value):
-        self.value = str(value)
-
-    def __str__(self):
-        return str(self.value)
-
 class NumberNode:
-    def __init__(self, value):
+    def __init__(self, value: str):
         self.value = int(value)
 
-    def __str__(self):
-        return str(self.value)
-
-class IdentifierNode:
-    def __init__(self, value):
-        self.value = str(value)
-    
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
 class PrintNode:
-    def __init__(self, print_node):
+    def __init__(self, print_node: TreeNode):
         self.print_node = print_node
 
+    def __str__(self) -> str:
+        return str(self.print_node)
+
 class ConditionNode:
-    def __init__(self, condition_node, execute_node):
+    def __init__(self, condition_node: TreeNode, execute_node: TreeNode):
         self.condition_node = condition_node
         self.execute_node = execute_node
     
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.condition_node) + " -> " + str(self.execute_node)
-
 
 class WhileNode(ConditionNode):
     def __init__(self, condition_node, execute_node):
         ConditionNode.__init__(self, condition_node, execute_node)
+
+    def __str__(self) -> str:
+        return ConditionNode.__str__(self)
+
+class Tree:
+    def __init__(self, root_node: TreeNode):
+        self.root_node = root_node
+
+    def __str__(self):
+        node_strings = list(map(lambda node: str(node), self.root_node.nodes))
+        return "\n".join(node_strings)

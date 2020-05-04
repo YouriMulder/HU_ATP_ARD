@@ -1,24 +1,27 @@
-from .tree import ConditionNode, WhileNode, RootNode, IdentifierNode, NumberNode, OperatorNode, BinaryOpNode, AssignmentNode, PrintNode, Tree
+from .tree import TreeNode, ConditionNode, WhileNode, RootNode, IdentifierNode, NumberNode, OperatorNode, BinaryOpNode, AssignmentNode, PrintNode, Tree
 from ..token import TokenSymbol, Token
+
+from typing import List, Tuple, Union
 
 import copy
 
-def token_is_operator(token):
-    return token.symbol in TokenSymbol.OPERATOR
-
 class ParseState:
-    def __init__(self, tokens):
+    def __init__(self, tokens: List[Token]):
         self.tokens = tokens
+        
         if len(self.tokens) > 0:
             self.current_token = self.tokens[0]
         else:
             self.current_token = Token(TokenSymbol.DIVERSE.EOF, "")
 
-def parse_pop_first_token(parse_state):
+def token_is_operator(token: Token) -> bool:
+    return token.symbol in TokenSymbol.OPERATOR
+
+def parse_pop_first_token(parse_state: ParseState) -> Tuple[Token, ParseState]:
     item = parse_state.current_token
     return item, ParseState(parse_state.tokens[1:])
 
-def factor(parse_state):
+def factor(parse_state: ParseState) -> Tuple[Union[None, TreeNode], ParseState]:
     """
     factor : INTEGER
     """
@@ -33,7 +36,7 @@ def factor(parse_state):
     
     return None, parse_state
 
-def term_check_multiply_or_devide(parse_state, root):
+def term_check_multiply_or_devide(parse_state: ParseState, root: TreeNode) -> Tuple[TreeNode, ParseState]:
     if parse_state.current_token.symbol not in (TokenSymbol.OPERATOR.MATH.MULTIPLY, TokenSymbol.OPERATOR.MATH.DEVIDE):
         return root, parse_state
     
@@ -51,7 +54,7 @@ def term(parse_state):
     
     return term_check_multiply_or_devide(parse_state, node)
 
-def expr_check_plus_or_minus(parse_state, root):
+def expr_check_plus_or_minus(parse_state: ParseState, root: TreeNode) -> Tuple[TreeNode, ParseState]:
     if parse_state.current_token.symbol not in (TokenSymbol.OPERATOR.MATH.PLUS, TokenSymbol.OPERATOR.MATH.MIN):
         return root, parse_state
     
@@ -60,7 +63,7 @@ def expr_check_plus_or_minus(parse_state, root):
     node = BinaryOpNode(left=root, operator=OperatorNode(token.value), right=right_node)
     return expr_check_plus_or_minus(parse_state, node)
 
-def expr(parse_state, initial_term=None):
+def expr(parse_state: ParseState, initial_term: Union[None, TreeNode]=None) -> Tuple[TreeNode, ParseState]:
     """
     expr   : term ((PLUS | MINUS) term)*
     term   : factor ((MUL | DIV) factor)*
@@ -73,36 +76,33 @@ def expr(parse_state, initial_term=None):
 
     return expr_check_plus_or_minus(parse_state, node)
 
-def parse_condition(parse_state, root_node, condition_node_type) -> None:
+def parse_condition(parse_state: ParseState, root_node: TreeNode, condition_node_type: Union[ConditionNode, WhileNode]) -> Tuple[Union[None, TreeNode], ParseState]:
     
     token, parse_state = parse_pop_first_token(parse_state)
     if token.symbol != TokenSymbol.CONTROL.LPARAN:
-        print("LPARAN expected got:", token)
         return None, parse_state
 
     condition_node, parse_state = parsing(parse_state)
     
     token, parse_state = parse_pop_first_token(parse_state)
     if token.symbol != TokenSymbol.CONTROL.RPARAN:
-        print("RPARAN expected got:", token)
         return None, parse_state
 
     token, parse_state = parse_pop_first_token(parse_state)
     if token.symbol != TokenSymbol.CONTROL.LBRACE:
-        print("LBRACE expected got:", token)
         return None, parse_state
     
     execute_node, parse_state = create_root_node(parse_state)
-    node = condition_node_type(condition_node, execute_node)
+    node = condition_node_type(condition_node, execute_node) 
 
     token, parse_state = parse_pop_first_token(parse_state)
     if token.symbol != TokenSymbol.CONTROL.RBRACE:
-        print("RBRACE expected got:", token)
         return None, parse_state
     
     return node, parse_state
     
-def parsing(parse_state, root=None):
+def parsing(parse_state: ParseState, root: Union[None, TreeNode]=None) -> Tuple[TreeNode, ParseState]:
+    
     if parse_state.current_token.symbol == TokenSymbol.OPERATOR.ASSIGNMENT.ASSIGNMENT:
         token, parse_state = parse_pop_first_token(parse_state)
         assignment_node, parse_state = parsing(parse_state)
@@ -145,7 +145,8 @@ def parsing(parse_state, root=None):
 
     return root, parse_state
 
-def create_root_node(parse_state, nodes=[]):
+def create_root_node(parse_state: ParseState, nodes: List[TreeNode]=[]) -> Tuple[RootNode, ParseState]:
+    
     if parse_state.current_token.symbol in (TokenSymbol.DIVERSE.EOF, TokenSymbol.CONTROL.RBRACE):
         return RootNode(nodes), parse_state
 
@@ -156,11 +157,8 @@ def create_root_node(parse_state, nodes=[]):
 
     return create_root_node(parse_state, nodes + [node])
 
-def create_ast(parse_state):
-    if len(parse_state.tokens) == 0 or parse_state.current_token == Token.Diverse.EOF:
-        return Tree(root_node)
-
-def create_ast(tokens):
+def create_ast(tokens: List[Token]) -> Tree:
+    
     parse_state = ParseState(tokens)
     root_node, parse_state = create_root_node(parse_state)
     tree = Tree(root_node)

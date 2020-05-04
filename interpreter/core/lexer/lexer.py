@@ -1,18 +1,18 @@
 from ..token import TokenSymbol, Token
 
 import re
-from typing import List
-import copy
+from typing import Union, List
 
 class TokenCombination:
     def __init__(self, symbol: TokenSymbol, regex: str):
         self.symbol = symbol
         self.regex = regex
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.symbol.value + " " + self.regex
 
-def get_matching_token_combination(sequence):
+
+def get_matching_token_combination(sequence: str) -> Union[TokenCombination, None]:
     token_type_combinations = [
         TokenCombination(TokenSymbol.CONTROL.WHILE,         r"^WhIlE$"),
         TokenCombination(TokenSymbol.CONTROL.IF,            r"^iF$"),
@@ -42,53 +42,39 @@ def get_matching_token_combination(sequence):
 
     token_types = list(filter(lambda x: re.match(x.regex, sequence), token_type_combinations))
 
-    if len(token_types) == 1:
-        return token_types[0]
-    if len(token_types) > 1:
-        pass
-        # for token in token_types:
-        #     print(token)
+    if len(token_types) == 0:
+        return None
+        
     return token_types[0]
 
-def tokenize(characters: List[str], tokens=[], sequence: str="") -> List[Token]:
+def tokenize(characters: List[str], tokens: List[Token]=[], sequence: str="") -> List[Token]:
     head, *tail = characters
     characters = tail
-    
+
     WHITESPACE = " "
     NEWLINE = "\n"
     ENDOFSTATEMENT = "!"
-    if head not in (WHITESPACE, NEWLINE, ENDOFSTATEMENT):
+    if head not in (WHITESPACE, ENDOFSTATEMENT, NEWLINE):
         sequence = sequence + head
 
     if head in (WHITESPACE, ENDOFSTATEMENT, NEWLINE) or len(characters) == 0:
         if sequence != "":
             token_combination = get_matching_token_combination(sequence)
-            tokens.append(Token(
-                token_combination.symbol,
-                sequence
-            ))
+            tokens = tokens + [Token(token_combination.symbol, sequence)]
 
             sequence = ""
-    
-    if head == ENDOFSTATEMENT:
-        token_combination = get_matching_token_combination(head)
-        tokens.append(Token(
-            token_combination.symbol,
-            head
-        ))
-
-    if len(characters) == 0:
-        tokens.append(Token(
-            TokenSymbol.DIVERSE.EOF,
-            ""
-        ))
         
-        return
-
-    tokenize(characters, tokens, sequence)
+        if head == ENDOFSTATEMENT:
+            token_combination = get_matching_token_combination(head)
+            tokens = tokens + [Token(token_combination.symbol, head)]
+        
+    if len(characters) == 0:
+        tokens = tokens + [Token(TokenSymbol.DIVERSE.EOF, "")]
+        return tokens
+        
+    return tokenize(characters, tokens, sequence)
 
 def lexer(source_code: str) -> List[Token]:
-    tokens = []
-    tokenize(list(source_code), tokens)
+    tokens = tokenize(list(source_code))
     return tokens
     

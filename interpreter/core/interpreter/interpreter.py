@@ -1,21 +1,24 @@
 from ..token import TokenSymbol
-from ..parser.tree import RootNode, ConditionNode, WhileNode, BinaryOpNode, AssignmentNode, IdentifierNode, NumberNode, PrintNode
+from ..parser.tree import RootNode, ConditionNode, WhileNode, BinaryOpNode, AssignmentNode, IdentifierNode, NumberNode, PrintNode, TreeNode, Tree
+
+from typing import Union, Tuple, Callable, List
+import copy
 
 class ProgramState:
     def __init__(self):
         self.variables = dict()
     
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.variables)
 
-def program_state_decorator(f, program_state, node):
+def program_state_decorator(f: Callable[[ProgramState, TreeNode], any], program_state: ProgramState, node: TreeNode):
     output = f(program_state, node)
     if type(output) != tuple:
         return output, program_state
 
     return output
 
-def visit_root_nodes(program_state, nodes):
+def visit_root_nodes(program_state: ProgramState, nodes: List[TreeNode]) -> Tuple[None, ProgramState]:
     if len(nodes) == 0:
         return None, program_state
     
@@ -23,10 +26,10 @@ def visit_root_nodes(program_state, nodes):
     node_output, program_state = visit_node(program_state, head)
     return visit_root_nodes(program_state, tail)
 
-def visit_root_node(program_state, node):
-    return visit_root_nodes(program_state, node.nodes)
+def visit_root_node(program_state: ProgramState, root_node: RootNode):
+    return visit_root_nodes(program_state, root_node.nodes)
     
-def get_operator_func(node):
+def get_operator_func(binary_operator_node: BinaryOpNode) -> Union[None, Callable[[any, any], any]]:
     operator_function_combinations = [
         ("+",   lambda x,y: x + y),
         ("-",   lambda x,y: x - y),
@@ -40,54 +43,53 @@ def get_operator_func(node):
         (":>=", lambda x,y: x >= y),
     ]
     
-    operator_funcs = list(filter(lambda x: node.operator.value == x[0], operator_function_combinations))
+    operator_funcs = list(filter(lambda x: binary_operator_node.operator.value == x[0], operator_function_combinations))
     if len(operator_funcs) == 1:
         operator_func = operator_funcs[0][1]
         return operator_func
-    if len(operator_funcs) > 1:
-        for operator_func in operator_funcs:
-            print(operator_func)
-
-def visit_binary_operator(program_state, node):
-    func = get_operator_func(node)
-    output_left, program_state_left = visit_node(program_state, node.left)
-    output_right, program_state_right = visit_node(program_state, node.right)
-    return func(output_left, output_right)
-
-def visit_assignment_node(program_state, node):
-    new_program_state = program_state
-    node_output, program_state = visit_node(program_state, node.right)
-    new_program_state.variables[node.left.value] = node_output
-    return None, new_program_state
-
-def visit_identifier_node(program_state, node):
-    if node.value in program_state.variables.keys():
-        return program_state.variables[node.value]
     
     return None
 
-def visit_print_node(program_state, node):
-    output, program_state = visit_node(program_state, node.print_node)
+def visit_binary_operator(program_state: ProgramState, binary_operator_node: BinaryOpNode) -> any:
+    func = get_operator_func(binary_operator_node)
+    output_left, program_state_left = visit_node(program_state, binary_operator_node.left)
+    output_right, program_state_right = visit_node(program_state, binary_operator_node.right)
+    return func(output_left, output_right)
+
+def visit_assignment_node(program_state: ProgramState, assignment_node: AssignmentNode) -> Tuple[None, ProgramState]:
+    new_program_state = copy.deepcopy(program_state)
+    node_output, program_state = visit_node(program_state, assignment_node.right)
+    new_program_state.variables[assignment_node.left.value] = node_output
+    return None, new_program_state
+
+def visit_identifier_node(program_state: ProgramState, identifier_node: IdentifierNode) -> Union[None, any]:
+    if identifier_node.value in program_state.variables.keys():
+        return program_state.variables[identifier_node.value]
+    
+    return None
+
+def visit_print_node(program_state: ProgramState, print_node: PrintNode) -> Tuple[None, ProgramState]:
+    output, program_state = visit_node(program_state, print_node.print_node)
     print("interpreter:", output)
     return None, program_state
 
-def visit_condition_node(program_state, node):
-    output, program_state = visit_node(program_state, node.condition_node)
+def visit_condition_node(program_state: ProgramState, condition_node: ConditionNode) -> Tuple[any, ProgramState]:
+    output, program_state = visit_node(program_state, condition_node.condition_node)
     if output == False:
         return output, program_state
     
-    return visit_node(program_state, node.execute_node)
+    return visit_node(program_state, condition_node.execute_node)
 
-def visit_while_node(program_state, node):
-    output, program_state = visit_node(program_state, node.condition_node)
+def visit_while_node(program_state: ProgramState, while_node: WhileNode) -> Tuple[any, ProgramState]:
+    output, program_state = visit_node(program_state, while_node.condition_node)
     if output == False:
         return output, program_state
     
-    output, program_state = visit_node(program_state, node.execute_node)
-    visit_while_node(program_state, node)
+    output, program_state = visit_node(program_state, while_node.execute_node)
+    visit_while_node(program_state, while_node)
     
 
-def visit_node(program_state, node):
+def visit_node(program_state: ProgramState, node: TreeNode) -> Union[None, Tuple[any, ProgramState]]:
     node_function_combinations = [
         (RootNode, visit_root_node),
         (AssignmentNode, visit_assignment_node),
@@ -104,13 +106,9 @@ def visit_node(program_state, node):
         visit_node_func = node_funcs[0][1]
         return program_state_decorator(visit_node_func, program_state, node)
     
-    if len(node_funcs) > 1:
-        for node_func in node_funcs:
-            print(node_func)
+    return None
 
-    return "node visit error"
-
-def interpret(ast):
+def interpret(ast: Tree) -> ProgramState:
     program_state = ProgramState()
     result, program_state = visit_node(program_state, ast.root_node)
     return program_state

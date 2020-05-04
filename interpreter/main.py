@@ -1,4 +1,6 @@
-from path import path
+# This file is not conform the functional programming principles
+
+from path import Path
 from core.lexer.lexer import lexer
 from core.parser.ast import create_ast
 from core.interpreter.interpreter import interpret
@@ -20,19 +22,22 @@ class file_input:
             "File path: " + self.file_path + "\n" \
             + self.file_content
 
-def main():
-    source_file_path = path.source + "turing.ym"
-    source_file = file_input(source_file_path)
+def main() -> None: 
+    source_file = file_input(Path.source_turing)
+    
     print("Tokenize")
     tokens = lexer(source_file.get_file_content())
+    
     print("ast")
     ast = create_ast(tokens)
+    
     print("interpret")
     result = interpret(ast) 
+    
     print(result)
 
 sys.setrecursionlimit(0x100000)
-threading.stack_size(256000000) #set stack to 256mb
+threading.stack_size(256000000) # set stack to 256mb
 t = threading.Thread(target=main())
 t.start()
 t.join()
