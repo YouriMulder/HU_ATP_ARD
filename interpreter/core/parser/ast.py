@@ -1,7 +1,7 @@
 from .tree import TreeNode, ConditionNode, WhileNode, RootNode, IdentifierNode, NumberNode, OperatorNode, BinaryOpNode, AssignmentNode, PrintNode, Tree
 from ..token import TokenSymbol, Token
 
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Callable
 
 import copy
 
@@ -65,8 +65,9 @@ def factor(parse_state: ParseState) -> Tuple[Union[None, TreeNode], ParseState]:
     return None, parse_state
 
 
-def term(parse_state: ParseState) -> Tuple[TreeNode, ParseState]:
+def term(parse_state: ParseState, root: TreeNode = None) -> Tuple[TreeNode, ParseState]:
     """
+    WARINING
     term :: ParseState -> (TreeNode, ParseState)
     @brief This function creates a term
     @details
@@ -75,12 +76,13 @@ def term(parse_state: ParseState) -> Tuple[TreeNode, ParseState]:
     @return Tuple containing a TreeNode with the current found expression and the current ParseState.
     """
 
-    node, parse_state = factor(parse_state)
+    if root == None:
+        root, parse_state = factor(parse_state)
 
-    return expr_check_operator(parse_state, node, (TokenSymbol.OPERATOR.MATH.MULTIPLY, TokenSymbol.OPERATOR.MATH.DEVIDE))
+    return expr_check_operator(parse_state, root, factor, (TokenSymbol.OPERATOR.MATH.MULTIPLY, TokenSymbol.OPERATOR.MATH.DEVIDE))
 
 
-def expr_check_operator(parse_state: ParseState, root: TreeNode, check_operators: Tuple[TokenSymbol.OPERATOR]) -> Tuple[TreeNode, ParseState]:
+def expr_check_operator(parse_state: ParseState, root: TreeNode, further_parse_method: Callable[[ParseState], Tuple[Union[None, TreeNode], ParseState]], check_operators: Tuple[TokenSymbol.OPERATOR]) -> Tuple[TreeNode, ParseState]:
     """
     expr :: ParseState -> TreeNode -> operators -> (TreeNode, ParseState)
     @brief This function creates a binary node if token in check_operators.
@@ -98,10 +100,10 @@ def expr_check_operator(parse_state: ParseState, root: TreeNode, check_operators
         return root, parse_state
 
     token, parse_state = parse_pop_first_token(parse_state)
-    right_node, parse_state = term(parse_state)
+    right_node, parse_state = further_parse_method(parse_state)
     node = BinaryOpNode(left=root, operator=OperatorNode(
         token.value), right=right_node)
-    return expr_check_operator(parse_state, node, check_operators)
+    return expr_check_operator(parse_state, node, further_parse_method, check_operators)
 
 
 def expr(parse_state: ParseState, initial_term: Union[None, TreeNode] = None) -> Tuple[TreeNode, ParseState]:
@@ -111,16 +113,13 @@ def expr(parse_state: ParseState, initial_term: Union[None, TreeNode] = None) ->
     @details
         expr : term ((PLUS | MINUS) term)*
     @param parse_state The current ParseState of the abstract syntax tree parsing.
-    @param initial_term The initial term found to start the expression with.
+    @param root The initial term found to start the expression with.
     @return A tuple containing the treeNode(expression) and current ParseState.
     """
-    if initial_term == None:
-        node, parse_state = term(parse_state)
-    else:
-        node = initial_term
+    node, parse_state = term(parse_state, initial_term)
 
-    return expr_check_operator(parse_state, node, (TokenSymbol.OPERATOR.MATH.PLUS, TokenSymbol.OPERATOR.MATH.MIN))
-
+    return expr_check_operator(parse_state, node, term, (TokenSymbol.OPERATOR.MATH.PLUS, TokenSymbol.OPERATOR.MATH.MIN))
+    
 
 def parse_condition(parse_state: ParseState, condition_node_type: type) -> Tuple[Union[None, TreeNode], ParseState]:
     """

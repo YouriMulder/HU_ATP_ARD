@@ -19,7 +19,7 @@ def main() -> None:
         4. Interpret the abstract syntax tree
     """
 
-    source_file_path = Path.source_main
+    source_file_path = Path.source_test
 
     source_file_content = None
     with open(source_file_path, 'r') as opened_file:
@@ -28,13 +28,14 @@ def main() -> None:
     if source_file_content == None:
         return
 
-    print("Tokenize")
+    print("Lexing")
     tokens = lexer(source_file_content)
 
-    print("ast")
+    print("Parsing")
     ast = create_ast(tokens)
+    print(ast)
 
-    print("interpret")
+    print("Interpreting")
     result = interpret(ast)
 
     print(result)

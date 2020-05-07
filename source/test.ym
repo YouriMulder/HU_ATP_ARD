@@ -1,10 +1,18 @@
-CoUnTeR := 10!
-CoUnTeR := 11!
-CoUnTeR := 12!
-CoUnTeR := 13!
-CoUnTeR := 14!
-
-iF ( 10 :== 10 ) {
-    CoUnTeR := 15!
-    CoUnTeR := CoUnTeR + 2!
+iF ( 1 + 2 + 3 + 4 :== 10 ) {
+    ShOw 10!
 }
+
+ShOw 1 / 2 + 1 * 20 / 10 + 2 - 10!
+
+TeSt := 1010 / 2!
+TeSt_2 := 11!
+ShOw TeSt_2 + TeSt * TeSt_2!
+
+ShOw TeSt_2 - TeSt_2 * TeSt_2 / TeSt_2!
+
+TeSt := 1010!
+TeSt := TeSt * TeSt + TeSt!
+ShOw TeSt!
+
+TeSt := TeSt + 11 - 100!
+ShOw TeSt!

@@ -135,7 +135,7 @@ ShOwMyVaLuE
 ## How To Use
 The [interpreter](https://github.com/YouriMulder/HU_ATP_ARD/tree/master/interpreter) is provided for the programming language. This contains the lexing, parsing and interpreting stages. Execute the main in the [interpreter folder](https://github.com/YouriMulder/HU_ATP_ARD/tree/master/interpreter) to execute the interpreter. In the [main](https://github.com/YouriMulder/HU_ATP_ARD/blob/master/interpreter/main.py) of the interpreter the location to the main file is provided to the interpreter `source_file_path = Path.source_main`. It is possible to either rename any file in the source folder to main.ym or change the `source_file_path` to the path of the `*.ym` file. <br>
 For example `source_file_path = /home/youri/another_file.ym`<br>
-<br>
+
 The output of the interpreting stage is displayed in the console. The output should look as follows
 
 ```
