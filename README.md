@@ -20,7 +20,7 @@ This programming language is called Youri. It is a programming language based on
 | :<=     | Less or equal    | <=                |
 | :<      | Less             | <                 |
 | :>      | Greater          | >                 |
-| =       | Assignment       | =                 |
+| :=       | Assignment       | =                 |
 | ShOW    | Print to console | print             |
 | !       | End of statement | enter / '\n'      |
 
