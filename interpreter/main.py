@@ -33,7 +33,6 @@ def main() -> None:
 
     print("Parsing")
     ast = create_ast(tokens)
-    print(ast)
 
     print("Interpreting")
     result = interpret(ast)
