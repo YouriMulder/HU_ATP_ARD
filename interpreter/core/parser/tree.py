@@ -11,7 +11,7 @@ class RootNode(TreeNode):
 
     def __str__(self) -> str:
         result = map(lambda node: str(node), self.nodes)
-        return '[' + ' '.join(result) + ']'
+        return '[' + ', '.join(result) + ']'
 
 
 class IdentifierNode(TreeNode):

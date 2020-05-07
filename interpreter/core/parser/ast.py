@@ -7,7 +7,17 @@ import copy
 
 
 class ParseState:
+    """
+    @brief This class is used to store the current state when parsing.
+    @details The class contains the tokens of the current parsing state
+    """
     def __init__(self, tokens: List[Token]):
+        """
+        @brief Initialises the ParseState object.
+        @details
+            If the tokens list is empty it is assumed that it is the end of the file.
+        @param tokens The tokens in the current ParseState.
+        """
         self.tokens = tokens
 
         if len(self.tokens) > 0:
@@ -15,8 +25,13 @@ class ParseState:
         else:
             self.current_token = Token(TokenSymbol.DIVERSE.EOF, "")
 
+    def __str__(self) -> str:
+        result = map(lambda token: str(token), self.tokens)
+        return '[' + ', '.join(result) + ']'
+
 def parse_pop_first_token(parse_state: ParseState) -> Tuple[Token, ParseState]:
     """
+    parse_pop_first_token :: ParseState -> (Token, ParseState)
     @brief This function pops the first token of the ParseState
     @param parse_state The current ParseState of the abstract syntax tree parsing.
     @return A tuple containing the popped token and the new ParseState
@@ -27,6 +42,7 @@ def parse_pop_first_token(parse_state: ParseState) -> Tuple[Token, ParseState]:
 
 def factor(parse_state: ParseState) -> Tuple[Union[None, TreeNode], ParseState]:
     """
+    factor :: ParseState -> (None | TreeNode, ParseState)
     @brief This function creates a factor.
     @details
         factor : INTEGER | IDENTIFIER
@@ -51,6 +67,7 @@ def factor(parse_state: ParseState) -> Tuple[Union[None, TreeNode], ParseState]:
 
 def term(parse_state: ParseState) -> Tuple[TreeNode, ParseState]:
     """
+    term :: ParseState -> (TreeNode, ParseState)
     @brief This function creates a term
     @details
         term   : factor ((MUL | DIV) factor)*
