@@ -36,38 +36,38 @@ Values can be stored in an identifier. The identifier must be cased in a special
 * _ and 0-9 are also allowed after the first character
 * After a _ or 0-9 should be a capital if there is a following character
 
-:heavy_check_mark:  `CoUnTeR`
-:x:                 `coUnTeR`
-:x:                 `CounteR`
-:heavy_check_mark:  `ThIs_Is_11`
-:heavy_check_mark:  `I_11_I`
-:x:                 `1_1_2`
-:x:                 `13_ThIS_Is`
+:heavy_check_mark:  `CoUnTeR` <br>
+:x:                 `coUnTeR` <br>
+:x:                 `CounteR` <br>
+:heavy_check_mark:  `ThIs_Is_11` <br>
+:heavy_check_mark:  `I_11_I` <br>
+:x:                 `1_1_2` <br>
+:x:                 `13_ThIS_Is` <br>
 
 
 ### Assignments
 To store data an assignment is necessary. An assignment is done using an identifier followed by `:=`. After the assignment operator the value which you want to store is placed. This could be an [expression](#expressions).
 
-:heavy_check_mark:  `CoUnTeR     := 10!`
-:heavy_check_mark:  `ThIs_Is_11  := 11!`
-:x:                 `CoUnTeR        10!`
-:x:                 `ThIs_Is_11  := 11`
-:x:                 `ThIs_Is_11  :=11`
-:x:                 `ThIs_Is_11:= 11`
+:heavy_check_mark:  `CoUnTeR     := 10!` <br>
+:heavy_check_mark:  `ThIs_Is_11  := 11!` <br>
+:x:                 `CoUnTeR        10!` <br>
+:x:                 `ThIs_Is_11  := 11` <br>
+:x:                 `ThIs_Is_11  :=11` <br>
+:x:                 `ThIs_Is_11:= 11` <br>
 
 
 ### Expressions
 Expressions are made terms and factors combined with mathematical operators. The mathematical order is applied when interpreting the expression.
 
-:heavy_check_mark:  `DoUbLe     := CoUnTer + CoUnTer!`
-:heavy_check_mark:  `DoUbLe     := 1 * 2!`
-:heavy_check_mark:  `DoUbLe     := CoUnTer + CoUnTer!`
-:heavy_check_mark:  `SpOnGe  := 11 / 23 * 11 + 11 - 10101 + Id_1!`
-:x:                 `SpOnGe  := 11/23 * 11 + 11 - 10101 + Id_1!`
-:x:                 `SpOnGe  := 11 / 23 * 11 + 11 - + Id_1!`
-:x:                 `SpOnGe  := 11/23 * 11+11 - + Id_1!`
-:x:                 `CoUnTeR        10!`
-:x:                 `ThIs_Is_11  := ThIs_WaS_12 + 1`
+:heavy_check_mark:  `DoUbLe     := CoUnTer + CoUnTer!` <br>
+:heavy_check_mark:  `DoUbLe     := 1 * 2!` <br>
+:heavy_check_mark:  `DoUbLe     := CoUnTer + CoUnTer!` <br>
+:heavy_check_mark:  `SpOnGe  := 11 / 23 * 11 + 11 - 10101 + Id_1!` <br>
+:x:                 `SpOnGe  := 11/23 * 11 + 11 - 10101 + Id_1!` <br>
+:x:                 `SpOnGe  := 11 / 23 * 11 + 11 - + Id_1!` <br>
+:x:                 `SpOnGe  := 11/23 * 11+11 - + Id_1!` <br>
+:x:                 `CoUnTeR        10!` <br>
+:x:                 `ThIs_Is_11  := ThIs_WaS_12 + 1` <br>
 
 ### Conditions
 Conditions are if statements. The condition is written between parentheses (). The code block after the { is executed when the condition is valuated True. The code block must always end with a closing bracket.
