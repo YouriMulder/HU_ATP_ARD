@@ -19,7 +19,7 @@ def main() -> None:
         4. Interpret the abstract syntax tree
     """
 
-    source_file_path = Path.source_turing
+    source_file_path = Path.source_main
 
     source_file_content = None
     with open(source_file_path, 'r') as opened_file:

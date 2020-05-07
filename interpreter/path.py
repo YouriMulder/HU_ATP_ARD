@@ -6,3 +6,4 @@ class Path:
     source_main = source + "main" + youri_file_extension
     source_test = source + "test" + youri_file_extension
     source_turing = source + "turing" + youri_file_extension
+    source_fibonacci = source + "fibonacci" + youri_file_extension

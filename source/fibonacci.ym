@@ -1,0 +1,24 @@
+FiB_TaRgEt := 300!
+FiB_ReSuLt := 0!
+
+PrEviOuS_FiB := 0!
+CuRrEnT_FiB := 1!
+i := 1!
+
+ShOuLd_LoOp := 1!
+iF ( FiB_TaRgEt :== 0 ) {
+    ShOuLd_LoOp := 0!
+}
+
+iF ( ShOuLd_LoOp :== 1 ) {
+    WhIlE ( i :< FiB_TaRgEt ) {
+        TeMp := CuRrEnT_FiB!
+        CuRrEnT_FiB := CuRrEnT_FiB + PrEviOuS_FiB!
+        PrEviOuS_FiB := TeMp!
+        
+        i := i + 1!
+    }
+    FiB_ReSuLt := CuRrEnT_FiB!
+}
+
+ShOw FiB_ReSuLt!

@@ -8,3 +8,5 @@ WhIlE ( youri :>= 0 ) {
     ShOw youri!
     youri := youri - 1!
 }
+
+ShOw 10 + 110 / 10 + 10 * 11 - 1!
