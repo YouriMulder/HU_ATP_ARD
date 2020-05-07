@@ -154,6 +154,32 @@ def parse_condition(parse_state: ParseState, condition_node_type: type) -> Tuple
 
     return node, parse_state
 
+def check_identifier_capital(identifier_value: str, char_should_be_capital: bool = True) -> bool:
+    """
+    check_identifier_capital :: [a] -> char_should_be_capital -> bool
+    @brief This function is used to check if the capitalisation is correct.
+    @detail
+        The identifier must start with a capital.
+        The following characters should be alternating from lower to upper case.
+        Any character after a _ or 0-9 must be a capital.
+    @param identifier_value The identifier you want to check.
+    @param char_should_be_capital Whether the current character should be a capital.
+    @return A boolean containing whether the capitalisation is correct.
+    """
+
+    if len(identifier_value) == 0:
+        return True
+    
+    head, *tail = identifier_value
+
+    if head == '_' or head.isdigit():
+        return check_identifier_capital(tail, True)
+    
+    if char_should_be_capital != head.isupper():
+        return False
+    
+    return check_identifier_capital(tail, not char_should_be_capital)
+
 
 def parsing(parse_state: ParseState, root: Union[None, TreeNode] = None) -> Tuple[TreeNode, ParseState]:
     """
@@ -179,7 +205,9 @@ def parsing(parse_state: ParseState, root: Union[None, TreeNode] = None) -> Tupl
 
     elif parse_state.current_token.symbol == TokenSymbol.DIVERSE.IDENTIFIER:
         token, parse_state = parse_pop_first_token(parse_state)
-        node = IdentifierNode(token.value)
+        if not check_identifier_capital(token.value):
+            return None, parse_state
+        node = IdentifierNode(token.value)    
         return parsing(parse_state, node)
 
     elif parse_state.current_token.symbol in TokenSymbol.OPERATOR.RELATIONAL:

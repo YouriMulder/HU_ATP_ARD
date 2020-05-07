@@ -1,12 +1,12 @@
-youri := 10000!
-hank := youri + 1!
-is_dit_waar := 10 + 10 :== 20!
-is_dit_waar := 1!
+YoUrI := 10000!
+HaNk := YoUrI + 1!
+Is_DiT_WaAr := 10 + 10 :== 20!
+Is_DiT_WaAr := 1!
 ShOw 1 + 2 + 3 + 43 + 45!
-ShOw is_dit_waar!
-WhIlE ( youri :>= 0 ) {
-    ShOw youri!
-    youri := youri - 1!
+ShOw Is_DiT_WaAr!
+WhIlE ( YoUrI :>= 0 ) {
+    ShOw YoUrI!
+    YoUrI := YoUrI - 1!
 }
 
 ShOw 10 + 110 / 10 + 10 * 11 - 1!

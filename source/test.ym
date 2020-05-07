@@ -1,10 +1,10 @@
-counter := 10!
-counter := 11!
-counter := 12!
-counter := 13!
-counter := 14!
+CoUnTeR := 10!
+CoUnTeR := 11!
+CoUnTeR := 12!
+CoUnTeR := 13!
+CoUnTeR := 14!
 
 iF ( 10 :== 10 ) {
-    counter := 15!
-    counter := counter + 2!
+    CoUnTeR := 15!
+    CoUnTeR := CoUnTeR + 2!
 }
