@@ -1,0 +1,14 @@
+HoW_To_AsSiGn := 10!
+ShoW HoW_To_AsSiGn!
+
+WhIlE ( HoW_To_AsSiGn :> 0 ) {
+    ShOw HoW_To_AsSiGn!
+    HoW_To_AsSiGn := HoW_To_AsSiGn - 1!
+}
+
+ShOw 10 * 10 + 1 * 10 / 10!
+
+HoW_To_AsSiGn := 100!
+iF ( HoW_To_AsSiGn :== 100 ) {
+    ShOw 505!
+}
