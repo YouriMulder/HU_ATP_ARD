@@ -7,7 +7,7 @@ Author:                     **Youri Mulder**
 This programming language is called Youri. It is a programming language based on Spongebob case [spongebob meme](https://www.google.com/search?q=spongebob+mocking+meme&sxsrf=ALeKk01wwRb3FxAJ-eFPkkc8mbwIpe-exA:1588852253869&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjqx8Tx16HpAhVGnaQKHQIcCF0Q_AUoAXoECA0QAw&biw=1920&bih=948#imgrc=1CN5p3lhOrjvXM)
 
 ## Instruction video
-<iframe width="560" height="315" src="https://www.youtube.com/embed/wlndIwT0E5Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![](http://img.youtube.com/vi/wlndIwT0E5Y/0.jpg)](http://www.youtube.com/watch?v=wlndIwT0E5Y "Programming language instruction video Youri")
 
 ## Keywords
 | Keyword | details          | Python equivalent |
