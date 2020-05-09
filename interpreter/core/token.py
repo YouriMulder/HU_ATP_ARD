@@ -1,5 +1,6 @@
 from enum import Enum
 
+# all Enum classes and sub classes do not have a __str__ function. The default __str__ function of the Enum are used instead.
 
 class TokenOperatorMath(Enum):
     PLUS = "PLUS"
